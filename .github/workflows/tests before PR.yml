@@ -31,7 +31,7 @@ jobs:
 
       - name: Check test coverage
         run: |
-          mvn jacoco:check || echo "Test coverage is below the required threshold!" && exit 1
+          mvn verify || echo "Test coverage is below the required threshold!" && exit 1
 
       - name: Extract and Print Coverage
         run: |
