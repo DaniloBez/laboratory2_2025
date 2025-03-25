@@ -70,11 +70,12 @@ jobs:
 
       - name: Check test coverage
         run: |
-          # Оцінка покриття з допомогою плагіна JaCoCo
-          coverage=$(mvn help:evaluate -Dexpression=jacoco.coverage -q -DforceStdout)
+          # Парсинг покриття з файлу згенерованого звіту (наприклад, HTML)
+          coverage=$(grep -oP 'class="percentage">\K[0-9.]+' target/site/jacoco/index.html)
+
+          # Перевірка, чи покриття тестами перевищує 75%
           echo "Test coverage: ${coverage}%"
 
-          # Перевірка, чи покриття перевищує 75%
           if (( $(echo "$coverage < 75" | bc -l) )); then
             echo "❌ Test coverage is below the 75%! (${coverage}%)" > failure_comment.txt
             exit 1
