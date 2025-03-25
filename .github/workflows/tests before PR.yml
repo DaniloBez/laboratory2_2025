@@ -70,16 +70,13 @@ jobs:
 
       - name: Check test coverage
         run: |
-          # Перевіряємо, чи файл звіту існує
           if [ ! -f target/site/jacoco/index.html ]; then
             echo "❌ JaCoCo report not found!" > failure_comment.txt
             exit 1
           fi
 
-          # Витягуємо відсоток покриття з HTML
-          coverage=$(xmllint --html --xpath "string(//table[@id='coveragetable']/tfoot/tr/td[3])" target/site/jacoco/index.html 2>/dev/null | tr -d '[:space:]')
+          coverage=$(grep -oP '(?<=<td class="ctr2">)\d+(?=%</td>)' target/site/jacoco/index.html | head -n 1)
 
-          # Якщо coverage порожній, то видаємо помилку
           if [ -z "$coverage" ]; then
             echo "❌ Failed to retrieve test coverage!" > failure_comment.txt
             exit 1
@@ -87,7 +84,6 @@ jobs:
 
           echo "📊 Test coverage: ${coverage}%"
 
-          # Перевірка, чи покриття < 75%
           if (( $(echo "$coverage < 75" | bc -l) )); then
             echo "❌ Test coverage is below the 75%! (${coverage}%)" > failure_comment.txt
             exit 1
