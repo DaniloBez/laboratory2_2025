@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - uses: actions/checkout@v4
@@ -38,13 +40,14 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-              
+
           git checkout gh-pages || git checkout --orphan gh-pages
           git rm -rf .
           cp -r target/site/jacoco/* .
           git add .
           git commit -m "Deploy JaCoCo report"
-          git push --force origin gh-pages
+
+          git push --force https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/DaniloBez/laboratory2_2025.git gh-pages
 
       - name: Add GitHub Pages link
         run: echo "JaCoCo Report:https://DaniloBez.github.io/Laboratoty2_2025/"
