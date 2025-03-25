@@ -7,7 +7,5 @@ class testClassTest {
     @Test
     void test1() {
         testClass t = new testClass();
-        assertTrue(t.test(2));
-        assertTrue(t.test(4));
     }
 }

@@ -54,6 +54,4 @@ jobs:
 
       - name: Check test coverage
         run: |
-          if ! mvn verify; then
-            exit 1
-          fi
+          mvn verify || echo "Test coverage is below the required threshold!" && exit 1
