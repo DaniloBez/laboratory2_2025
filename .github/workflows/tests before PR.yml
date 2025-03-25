@@ -24,26 +24,28 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        run: mvn -B package --file pom.xml
+        run: |
+          if ! mvn -B package --file pom.xml; then
+            echo "❌ Build failed!" >> failure_comment.txt
+            echo "Check the logs for details." >> failure_comment.txt
+            exit 1
+          fi
 
       - name: Run tests
-        run: mvn test
+        run: |
+          if ! mvn test; then
+            echo "❌ Tests failed!" >> failure_comment.txt
+            echo "Some tests did not pass. Check the logs for details." >> failure_comment.txt
+            exit 1
+          fi
 
       - name: Generate JaCoCo report
-        run: mvn jacoco:report
-
-      - name: Extract and Comment Coverage
-        if: github.event_name == 'pull_request'
         run: |
-          coverage=$(mvn help:evaluate -Dexpression=jacoco.coverage -q -DforceStdout)
-          echo "JaCoCo Test Coverage: ${coverage}%"
-
-          echo "📊 **Test Coverage:** ${coverage}%" >> coverage_comment.txt
-
-      - name: Comment test coverage on PR
-        uses: thollander/actions-comment-pull-request@v2
-        with:
-          filePath: coverage_comment.txt
+          if ! mvn jacoco:report; then
+            echo "❌ Generate JaCoCo report failed!" >> failure_comment.txt
+            echo "Check the logs for details." >> failure_comment.txt
+            exit 1
+          fi
 
 
       - name: Publish JaCoCo report to GitHub Pages
@@ -64,8 +66,14 @@ jobs:
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
-            📊 **JaCoCo Report:** [View here](https://DaniloBez.github.io/Laboratoty2_2025/)
+            📊 **JaCoCo Report:** [View here](https://DaniloBez.github.io/laboratoty2_2025/)
 
       - name: Check test coverage
         run: |
           mvn verify || echo "Test coverage is below the required threshold!" && exit 1
+
+      - name: Comment on PR if failed
+        if: failure() && github.event_name == 'pull_request'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          filePath: failure_comment.txt
