@@ -31,10 +31,19 @@ jobs:
       - name: Generate JaCoCo report
         run: mvn jacoco:report
 
-      - name: Extract and Print Coverage
+      - name: Extract and Comment Coverage
+        if: github.event_name == 'pull_request'
         run: |
           coverage=$(mvn help:evaluate -Dexpression=jacoco.coverage -q -DforceStdout)
-          echo "Test coverage: ${coverage}%"
+          echo "JaCoCo Test Coverage: ${coverage}%"
+
+          echo "📊 **Test Coverage:** ${coverage}%" >> coverage_comment.txt
+
+      - name: Comment test coverage on PR
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          filePath: coverage_comment.txt
+
 
       - name: Publish JaCoCo report to GitHub Pages
         run: |
@@ -49,8 +58,12 @@ jobs:
 
           git push --force https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/DaniloBez/laboratory2_2025.git gh-pages
 
-      - name: Add GitHub Pages link
-        run: echo "JaCoCo Report:https://DaniloBez.github.io/Laboratoty2_2025/"
+      - name: Comment test results on PR
+        if: github.event_name == 'pull_request'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            📊 **JaCoCo Report:** [View here](https://DaniloBez.github.io/Laboratoty2_2025/)
 
       - name: Check test coverage
         run: |
