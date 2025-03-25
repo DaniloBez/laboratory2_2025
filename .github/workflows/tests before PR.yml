@@ -26,24 +26,24 @@ jobs:
       - name: Build with Maven
         run: |
           if ! mvn -B package --file pom.xml; then
-            echo "❌ Build failed!" >> failure_comment.txt
-            echo "Check the logs for details." >> failure_comment.txt
+            echo "❌ Build failed!" > failure_comment.txt
+            echo "Check the logs for details." > failure_comment.txt
             exit 1
           fi
 
       - name: Run tests
         run: |
           if ! mvn test; then
-            echo "❌ Tests failed!" >> failure_comment.txt
-            echo "Some tests did not pass. Check the logs for details." >> failure_comment.txt
+            echo "❌ Tests failed!" > failure_comment.txt
+            echo "Some tests did not pass. Check the logs for details." > failure_comment.txt
             exit 1
           fi
 
       - name: Generate JaCoCo report
         run: |
           if ! mvn jacoco:report; then
-            echo "❌ Generate JaCoCo report failed!" >> failure_comment.txt
-            echo "Check the logs for details." >> failure_comment.txt
+            echo "❌ Generate JaCoCo report failed!" > failure_comment.txt
+            echo "Check the logs for details." > failure_comment.txt
             exit 1
           fi
 
@@ -70,7 +70,7 @@ jobs:
 
       - name: Check test coverage
         run: |
-          mvn verify || echo "Test coverage is below the required threshold!" && exit 1
+          if mvn verify || echo "Test coverage is below the 75%!" > failure_comment.txt && exit 1
 
       - name: Comment on PR if failed
         if: failure() && github.event_name == 'pull_request'
