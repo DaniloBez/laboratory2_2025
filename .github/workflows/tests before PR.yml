@@ -76,8 +76,8 @@ jobs:
             exit 1
           fi
 
-          # Витягуємо відсоток покриття
-          coverage=$(grep -oP '(?<=<td class="bar">)\d+\.\d+' target/site/jacoco/index.html | head -n 1)
+          # Витягуємо відсоток покриття з HTML
+          coverage=$(xmllint --html --xpath "string(//table[@id='coveragetable']/tfoot/tr/td[3])" target/site/jacoco/index.html 2>/dev/null | tr -d '[:space:]')
 
           # Якщо coverage порожній, то видаємо помилку
           if [ -z "$coverage" ]; then
