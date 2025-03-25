@@ -70,8 +70,13 @@ jobs:
 
       - name: Check test coverage
         run: |
-          if ! mvn verify; then
-            echo "Test coverage is below the 75%!" > failure_comment.txt
+          # Оцінка покриття з допомогою плагіна JaCoCo
+          coverage=$(mvn help:evaluate -Dexpression=jacoco.coverage -q -DforceStdout)
+          echo "Test coverage: ${coverage}%"
+
+          # Перевірка, чи покриття перевищує 75%
+          if (( $(echo "$coverage < 75" | bc -l) )); then
+            echo "❌ Test coverage is below the 75%! (${coverage}%)" > failure_comment.txt
             exit 1
           fi
 
