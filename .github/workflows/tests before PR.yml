@@ -70,7 +70,10 @@ jobs:
 
       - name: Check test coverage
         run: |
-          if mvn verify || echo "Test coverage is below the 75%!" > failure_comment.txt && exit 1
+          if ! mvn verify; then
+            echo "Test coverage is below the 75%!" > failure_comment.txt
+            exit 1
+          fi
 
       - name: Comment on PR if failed
         if: failure() && github.event_name == 'pull_request'
