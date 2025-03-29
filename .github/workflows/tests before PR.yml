@@ -9,67 +9,96 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Set up JDK 23
-      uses: actions/setup-java@v4
-      with:
-        java-version: '23'
-        distribution: 'temurin'
-        cache: maven
+      - name: Set up JDK 23
+        uses: actions/setup-java@v4
+        with:
+          java-version: '23'
+          distribution: 'temurin'
+          cache: maven
 
-    - name: Build with Maven
-      run: mvn -B package --file pom.xml
+      - name: Build with Maven
+        run: |
+          if ! mvn -B package --file pom.xml; then
+            echo "❌ Build failed!" > failure_comment.txt
+            echo "Check the logs for details." > failure_comment.txt
+            exit 1
+          fi
 
-    - name: Run tests
-      run: mvn test
+      - name: Run tests
+        run: |
+          if ! mvn test; then
+            echo "❌ Tests failed!" > failure_comment.txt
+            echo "Some tests did not pass. Check the logs for details." > failure_comment.txt
+            exit 1
+          fi
 
-    - name: Generate JaCoCo report
-      run: mvn jacoco:report
+      - name: Generate JaCoCo report
+        run: |
+          if ! mvn jacoco:report; then
+            echo "❌ Generate JaCoCo report failed!" > failure_comment.txt
+            echo "Check the logs for details." > failure_comment.txt
+            exit 1
+          fi
 
-    - name: Check test coverage
-      run: |
-        # Встановлюємо xmlstarlet для роботи з XML
-        sudo apt-get install -y xmlstarlet
-        
-        # Отримуємо покриття з JaCoCo
-        coverage=$(xmlstarlet sel -t -v "//counter[@type='LINE']/@covered" target/site/jacoco/jacoco.xml)
-        total=$(xmlstarlet sel -t -v "//counter[@type='LINE']/@total" target/site/jacoco/jacoco.xml)
-        
-        # Обчислюємо відсоток покриття
-        coverage_percent=$((100 * coverage / total))
-        
-        echo "Test coverage: $coverage_percent%"
 
-        # Перевіряємо, чи покриття більше або дорівнює 75%
-        if [ "$coverage_percent" -lt 75 ]; then
-          echo "Test coverage is below 75%, failing the PR."
-          exit 1
-        fi
+      - name: Publish JaCoCo report to GitHub Pages
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
 
-    - name: Publish JaCoCo report to GitHub Pages
-      run: |
-        # Встановлюємо Git для публікації на GitHub Pages
-        git config --global user.name "github-actions"
-        git config --global user.email "github-actions@github.com"
+          git checkout gh-pages || git checkout --orphan gh-pages
+          git rm -rf .
+          cp -r target/site/jacoco/* .
+          git add .
+          git commit -m "Deploy JaCoCo report"
 
-        # Перемикаємось на гілку gh-pages
-        git checkout gh-pages || git checkout --orphan gh-pages
+          git push --force https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/DaniloBez/laboratory2_2025.git gh-pages
 
-        # Видаляємо старі файли з попереднього звіту
-        git rm -rf .
+      - name: Comment test results on PR
+        if: github.event_name == 'pull_request'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          message: |
+            📊 **JaCoCo Report:** [View here](https://danilobez.github.io/laboratory2_2025/)
 
-        # Копіюємо звіт до кореня репозиторію
-        cp -r target/site/jacoco/* .
+      - name: Check test coverage
+        run: |
+          if [ ! -f target/site/jacoco/index.html ]; then
+            echo "❌ JaCoCo report not found!" > failure_comment.txt
+            exit 1
+          fi
 
-        # Додаємо зміни і комітимо
-        git add .
-        git commit -m "Deploy JaCoCo report"
+          coverage=$(grep -oP '(?<=<td class="ctr2">)\d+(?=%</td>)' target/site/jacoco/index.html | head -n 1)
 
-        # Пушимо на гілку gh-pages
-        git push --force origin gh-pages
+          if [ -z "$coverage" ]; then
+            echo "❌ Failed to retrieve test coverage!" > failure_comment.txt
+            exit 1
+          fi
 
-    - name: Add GitHub Pages link
-      run: echo "JaCoCo Report:https://DaniloBez.github.io/Laboratoty2_2025/"
+          echo "📊 Test coverage: ${coverage}%"
+
+          if (( $(echo "$coverage < 75" | bc -l) )); then
+            echo "❌ Test coverage is below the 75%! (${coverage}%)" > failure_comment.txt
+            exit 1
+          else
+            echo "✅ Successfully retrieved test coverage: ${coverage}%" > successful_comment.txt
+          fi
+
+      - name: Comment on PR if failed
+        if: failure() && github.event_name == 'pull_request'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          filePath: failure_comment.txt
+
+      - name: Comment on PR if failed
+        if: success() && github.event_name == 'pull_request'
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          filePath: successful_comment.txt
