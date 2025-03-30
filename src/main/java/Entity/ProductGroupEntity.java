@@ -40,6 +40,15 @@ public class ProductGroupEntity {
     }
 
     /**
+     * Оновлює поля відповідно до нових даних
+     * @param productGroupEntity нові дані
+     */
+    public void update(ProductGroupEntity productGroupEntity) {
+        this.name = productGroupEntity.getName();
+        this.description = productGroupEntity.getDescription();
+    }
+
+    /**
      * Повертає рядкове представлення групи продуктів.
      *
      * @return рядок, що містить назву та опис групи продуктів

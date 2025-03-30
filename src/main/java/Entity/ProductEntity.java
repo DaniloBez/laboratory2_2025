@@ -67,6 +67,19 @@ public class ProductEntity {
     }
 
     /**
+     * Оновлює поля відповідно до нових даних
+     * @param productEntity нові дані
+     */
+    public void update(ProductEntity productEntity) {
+        this.name = productEntity.name;
+        this.description = productEntity.description;
+        this.manufacturer = productEntity.manufacturer;
+        this.quantityInStock = productEntity.quantityInStock;
+        this.pricePerUnit = productEntity.pricePerUnit;
+        this.ProductGroupId = productEntity.ProductGroupId;
+    }
+
+    /**
      * Повертає рядкове представлення продукту.
      *
      * @return рядок, що містить інформацію про продукт
