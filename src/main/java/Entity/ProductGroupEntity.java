@@ -16,7 +16,7 @@ public class ProductGroupEntity {
     /**
      * Унікальний ідентифікатор групи продуктів.
      */
-    private String id = UUID.randomUUID().toString();
+    private final String id = UUID.randomUUID().toString();
 
     /**
      * Назва групи продуктів.
