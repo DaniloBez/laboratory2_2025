@@ -34,6 +34,11 @@ public class ProductGroupJSONRepository implements IProductGroupRepository {
      */
     ObjectMapper mapper = new ObjectMapper();
 
+    /**
+     * Зчитує усі групи продуктів з json файлу, і десеріалізує їх.
+     * Заповнює productGroups, якщо може зчитати.
+     * @return Result(true, null) або Result(false, error message)
+     */
     private Result readAllProductGroups(){
         Result resultCreate = file.createFileIfNotExist();
 
@@ -56,6 +61,10 @@ public class ProductGroupJSONRepository implements IProductGroupRepository {
         }
     }
 
+    /**
+     * Записує усі групи продуктів у json файл.
+     * @return Result(true, null) або Result(false, error message)
+     */
     private Result writeAllProductGroups(){
         Result resultCreate = file.createFileIfNotExist();
 
