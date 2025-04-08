@@ -1,6 +1,7 @@
 package Entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.UUID;
@@ -9,43 +10,48 @@ import java.util.UUID;
  * Представляє продукт, ідентифікований унікальним ID.
  */
 @Getter
-@Setter
+@NoArgsConstructor
 public class ProductEntity {
 
     /**
      * Унікальний ідентифікатор продукту.
      */
-    @Getter
     private String id = UUID.randomUUID().toString();
 
     /**
      * Назва продукту.
      */
+    @Setter
     private String name;
 
     /**
      * Опис продукту.
      */
+    @Setter
     private String description;
 
     /**
      * Виробник продукту.
      */
+    @Setter
     private String manufacturer;
 
     /**
      * Кількість продукту на складі.
      */
+    @Setter
     private double quantityInStock;
 
     /**
      * Ціна за одиницю продукту.
      */
+    @Setter
     private double pricePerUnit;
 
     /**
      * Унікальний ідентифікатор групи продуктів, до якої належить продукт.
      */
+    @Setter
     private String ProductGroupId;
 
     /**
