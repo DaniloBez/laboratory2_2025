@@ -57,6 +57,6 @@ public class ProductGroupEntity {
      */
     @Override
     public String toString() {
-        return "Назва: " + name + ", опис: " + description;
+        return name;
     }
 }

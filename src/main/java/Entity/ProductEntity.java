@@ -92,10 +92,6 @@ public class ProductEntity {
      */
     @Override
     public String toString() {
-        return "Назва: " + name +
-                ", опис: " + description +
-                ", виробник: " + manufacturer +
-                ", кількість на складі: " + quantityInStock +
-                ", ціна за одиницю: " + pricePerUnit;
+        return name;
     }
 }
