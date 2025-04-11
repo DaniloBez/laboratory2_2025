@@ -6,17 +6,15 @@ import Utils.JMenuBarUtil;
 import Utils.Result;
 
 import javax.swing.*;
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.List;
 
+/**
+ * Клас для створення форми управління групами товарів.
+ * Має вкладки для створення, оновлення, видалення, перегляду однієї групи та перегляду всіх груп товарів.
+ */
 public class ProductGroupForm extends JFrame {
-    private ProductGroupController controller;
-
-    private JMenuBar menuBar;
+    private final ProductGroupController controller;
 
     // Компоненти для вкладки "Створити"
     private JTextField createNameField, createDescField;
@@ -39,6 +37,9 @@ public class ProductGroupForm extends JFrame {
     private JTextArea viewAllTextArea;
     private JButton refreshButton;
 
+    /**
+     * Конструктор, що ініціалізує форму, встановлює вигляд та компоненти.
+     */
     public ProductGroupForm() {
         controller = ProductGroupController.getInstance();
 
@@ -58,9 +59,11 @@ public class ProductGroupForm extends JFrame {
         updateAllCombos();
     }
 
-
+    /**
+     * Ініціалізує всі компоненти форми.
+     */
     private void initComponents() {
-        menuBar = JMenuBarUtil.getMenuBar();
+        JMenuBar menuBar = JMenuBarUtil.getMenuBar();
         setJMenuBar(menuBar);
 
         JTabbedPane tabbedPane = new JTabbedPane();
@@ -190,7 +193,10 @@ public class ProductGroupForm extends JFrame {
         getContentPane().add(tabbedPane, BorderLayout.CENTER);
     }
 
-    // Обробка створення нової групи
+    /**
+     * Обробка створення нової групи.
+     * Валідує введені дані та викликає метод створення групи в контролері.
+     */
     private void handleCreate() {
         String name = createNameField.getText().trim();
         String description = createDescField.getText().trim();
@@ -205,7 +211,10 @@ public class ProductGroupForm extends JFrame {
         updateAllCombos();
     }
 
-    // Обробка оновлення вибраної групи
+    /**
+     * Обробка оновлення вибраної групи.
+     * Валідує введені дані та викликає метод оновлення групи в контролері.
+     */
     private void handleUpdate() {
         ProductGroupEntity selectedGroup = (ProductGroupEntity) updateComboBox.getSelectedItem();
         if (selectedGroup == null) {
@@ -225,7 +234,10 @@ public class ProductGroupForm extends JFrame {
         updateAllCombos();
     }
 
-    // Обробка видалення вибраної групи
+    /**
+     * Обробка видалення вибраної групи.
+     * Підтверджує видалення групи та викликає метод видалення групи в контролері.
+     */
     private void handleDelete() {
         ProductGroupEntity selectedGroup = (ProductGroupEntity) deleteComboBox.getSelectedItem();
         if (selectedGroup == null) {
@@ -242,7 +254,10 @@ public class ProductGroupForm extends JFrame {
         }
     }
 
-    // Обробка перегляду інформації про вибрану групу
+    /**
+     * Обробка перегляду інформації про вибрану групу.
+     * Виводить деталі групи у текстову область.
+     */
     private void handleViewSingle() {
         ProductGroupEntity selectedGroup = (ProductGroupEntity) viewComboBox.getSelectedItem();
         if (selectedGroup != null) {
@@ -253,7 +268,10 @@ public class ProductGroupForm extends JFrame {
         }
     }
 
-    // Оновлення текстової області для перегляду усіх груп
+    /**
+     * Оновлення текстової області для перегляду усіх груп.
+     * Отримує всі групи через контролер та відображає їх.
+     */
     private void refreshAllGroups() {
         List<ProductGroupEntity> groups = controller.getAll();
         StringBuilder sb = new StringBuilder();
@@ -265,7 +283,9 @@ public class ProductGroupForm extends JFrame {
         viewAllTextArea.setText(sb.toString());
     }
 
-    // Оновлюємо всі випадаючі списки на основі поточних даних
+    /**
+     * Оновлення випадаючих списків на основі актуальних даних груп.
+     */
     private void updateAllCombos() {
         List<ProductGroupEntity> groups = controller.getAll();
         updateComboBox.removeAllItems();
@@ -280,11 +300,17 @@ public class ProductGroupForm extends JFrame {
         refreshAllGroups();
     }
 
+    /**
+     * Очищає поля для створення нової групи.
+     */
     private void clearCreateFields() {
         createNameField.setText("");
         createDescField.setText("");
     }
 
+    /**
+     * Очищає поля для оновлення групи.
+     */
     private void clearUpdateFields() {
         updateNameField.setText("");
         updateDescField.setText("");
