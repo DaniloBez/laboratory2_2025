@@ -1,8 +1,7 @@
 package Service;
 
 import Entity.ProductEntity;
-import Entity.ProductGroupEntity;
-import Entity.ProductJSONRepository;
+import Repository.ProductJSONRepository;
 import Utils.Result;
 import Utils.UniqueNames;
 
