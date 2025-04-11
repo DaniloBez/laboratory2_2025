@@ -19,6 +19,12 @@ public class ProductGroupService {
      */
     IProductGroupRepository repository = new ProductGroupJSONRepository();
 
+    public ProductGroupService(){
+        for(ProductGroupEntity productGroupEntity : repository.findAll()){
+            UniqueNames.add(productGroupEntity.getName());
+        }
+    }
+
     /**
      * Створює нову групу товарів, якщо її назва унікальна.
      *

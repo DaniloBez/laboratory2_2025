@@ -1,6 +1,6 @@
-package Entity;
+package Repository;
 
-import Repository.IProductRepository;
+import Entity.ProductEntity;
 import Utils.FileHandler;
 import Utils.Result;
 import com.fasterxml.jackson.core.JsonProcessingException;
