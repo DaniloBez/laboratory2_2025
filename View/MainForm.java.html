@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MainForm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Laboratory2_2025</a> &gt; <a href="index.source.html" class="el_package">View</a> &gt; <span class="el_source">MainForm.java</span></div><h1>MainForm.java</h1><pre class="source lang-java linenums">package View;
+
+import Controller.ProductGroupController;
+import Entity.ProductGroupEntity;
+import Utils.JMenuBarUtil;
+import Utils.Result;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
+
+public class MainForm extends JFrame {
+    private JMenuBar menuBar;
+
+<span class="nc" id="L15">    public MainForm() {</span>
+<span class="nc" id="L16">        setTitle(&quot;Main&quot;);</span>
+<span class="nc" id="L17">        setSize(800, 600);</span>
+<span class="nc" id="L18">        setExtendedState(JFrame.MAXIMIZED_BOTH);</span>
+<span class="nc" id="L19">        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span>
+
+        // Встановлюємо сучасний вигляд (Nimbus)
+        try {
+<span class="nc" id="L23">            UIManager.setLookAndFeel(&quot;javax.swing.plaf.nimbus.NimbusLookAndFeel&quot;);</span>
+<span class="nc" id="L24">        } catch(Exception ex) {</span>
+<span class="nc" id="L25">            System.out.println(&quot;Nimbus L&amp;F не вдалося встановити.&quot;);</span>
+<span class="nc" id="L26">        }</span>
+
+<span class="nc" id="L28">        initComponents();</span>
+<span class="nc" id="L29">    }</span>
+
+    private void initComponents() {
+<span class="nc" id="L32">        menuBar = JMenuBarUtil.getMenuBar();</span>
+<span class="nc" id="L33">        setJMenuBar(menuBar);</span>
+<span class="nc" id="L34">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

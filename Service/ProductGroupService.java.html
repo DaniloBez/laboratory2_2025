@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductGroupService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Laboratory2_2025</a> &gt; <a href="index.source.html" class="el_package">Service</a> &gt; <span class="el_source">ProductGroupService.java</span></div><h1>ProductGroupService.java</h1><pre class="source lang-java linenums">package Service;
+
+import Entity.ProductGroupEntity;
+import Repository.IProductGroupRepository;
+import Repository.ProductGroupJSONRepository;
+import Utils.Result;
+import Utils.UniqueNames;
+
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Сервіс для управління об'єктами {@link ProductGroupEntity},
+ * який використовує реалізацію {@link IProductGroupRepository} для збереження даних.
+ */
+public class ProductGroupService {
+    /**
+     * Репозиторій для збереження та обробки об'єктів {@link ProductGroupEntity}.
+     */
+<span class="nc" id="L20">    IProductGroupRepository repository = new ProductGroupJSONRepository();</span>
+
+<span class="nc" id="L22">    public ProductGroupService(){</span>
+<span class="nc bnc" id="L23" title="All 2 branches missed.">        for(ProductGroupEntity productGroupEntity : repository.findAll()){</span>
+<span class="nc" id="L24">            UniqueNames.add(productGroupEntity.getName());</span>
+<span class="nc" id="L25">        }</span>
+<span class="nc" id="L26">    }</span>
+
+    /**
+     * Створює нову групу товарів, якщо її назва унікальна.
+     *
+     * @param productGroupEntity Об'єкт {@link ProductGroupEntity}, який потрібно створити.
+     * @return {@link Result} з успішним результатом або повідомленням про помилку, якщо назва неунікальна.
+     */
+    public Result create(ProductGroupEntity productGroupEntity) {
+<span class="nc" id="L35">        Result checkUnique = UniqueNames.add(productGroupEntity.getName());</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        if (checkUnique.isSuccess())</span>
+<span class="nc" id="L37">            return repository.save(productGroupEntity);</span>
+        else
+<span class="nc" id="L39">            return checkUnique;</span>
+    }
+
+    /**
+     * Оновлює групу товарів за ідентифікатором. Перевіряє унікальність нової назви.
+     *
+     * @param id Ідентифікатор існуючої групи.
+     * @param productGroupEntity Нові дані групи товарів.
+     * @return {@link Result} з успішним оновленням або повідомленням про помилку.
+     */
+    public Result update(String id, ProductGroupEntity productGroupEntity) {
+<span class="nc" id="L50">        Optional&lt;ProductGroupEntity&gt; oldGroup = repository.findById(id);</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        if (oldGroup.isEmpty())</span>
+<span class="nc" id="L52">            return new Result(false, &quot;Групу не знайдено!&quot;);</span>
+
+<span class="nc" id="L54">        UniqueNames.remove(oldGroup.get().getName());</span>
+<span class="nc" id="L55">        Result checkUnique = UniqueNames.add(productGroupEntity.getName());</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        if (checkUnique.isSuccess())</span>
+<span class="nc" id="L57">            return repository.update(id, productGroupEntity);</span>
+
+<span class="nc" id="L59">        return checkUnique;</span>
+    }
+
+    /**
+     * Повертає групу товарів за її ідентифікатором.
+     *
+     * @param id Ідентифікатор групи товарів.
+     * @return {@link Optional} з об'єктом {@link ProductGroupEntity}, якщо знайдено.
+     */
+    public Optional&lt;ProductGroupEntity&gt; findById(String id) {
+<span class="nc" id="L69">        return repository.findById(id);</span>
+    }
+
+    /**
+     * Повертає список усіх груп товарів.
+     *
+     * @return Список об'єктів {@link ProductGroupEntity}.
+     */
+    public List&lt;ProductGroupEntity&gt; getAll() {
+<span class="nc" id="L78">        return repository.findAll();</span>
+    }
+
+    /**
+     * Видаляє групу товарів за ідентифікатором. Також видаляє її назву зі списку унікальних імен.
+     *
+     * @param id Ідентифікатор групи товарів.
+     * @return {@link Result} з інформацією про успішність видалення.
+     */
+    public Result delete(String id) {
+<span class="nc" id="L88">        Optional&lt;ProductGroupEntity&gt; oldGroup = repository.findById(id);</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        if (oldGroup.isEmpty())</span>
+<span class="nc" id="L90">            return new Result(false, &quot;Групу не знайдено!&quot;);</span>
+
+<span class="nc" id="L92">        Result result = repository.deleteById(id);</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">        if (result.isSuccess())</span>
+<span class="nc" id="L94">            UniqueNames.remove(oldGroup.get().getName());</span>
+
+<span class="nc" id="L96">        return result;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
