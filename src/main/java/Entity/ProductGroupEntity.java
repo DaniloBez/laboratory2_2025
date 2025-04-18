@@ -51,6 +51,14 @@ public class ProductGroupEntity {
     }
 
     /**
+     * Повертає повну назву групи без id
+     * @return повна назва
+     */
+    public String fullName() {
+        return "Назва: " + name + "\n" + "Опис: " + description;
+    }
+
+    /**
      * Повертає рядкове представлення групи продуктів.
      *
      * @return рядок, що містить назву та опис групи продуктів

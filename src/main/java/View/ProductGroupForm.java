@@ -1,5 +1,6 @@
 package View;
 
+import Controller.ProductController;
 import Controller.ProductGroupController;
 import Entity.ProductGroupEntity;
 import Utils.JMenuBarUtil;
@@ -14,7 +15,8 @@ import java.util.List;
  * Має вкладки для створення, оновлення, видалення, перегляду однієї групи та перегляду всіх груп товарів.
  */
 public class ProductGroupForm extends JFrame {
-    private final ProductGroupController controller;
+    private final ProductGroupController groupController;
+    private final ProductController productController;
 
     // Компоненти для вкладки "Створити"
     private JTextField createNameField, createDescField;
@@ -41,7 +43,8 @@ public class ProductGroupForm extends JFrame {
      * Конструктор, що ініціалізує форму, встановлює вигляд та компоненти.
      */
     public ProductGroupForm() {
-        controller = ProductGroupController.getInstance();
+        groupController = ProductGroupController.getInstance();
+        productController = ProductController.getInstance();
 
         setTitle("Форма управління групами товарів");
         setSize(800, 600);
@@ -205,7 +208,7 @@ public class ProductGroupForm extends JFrame {
             return;
         }
         ProductGroupEntity newGroup = new ProductGroupEntity(name, description);
-        Result result = controller.create(newGroup);
+        Result result = groupController.create(newGroup);
         JOptionPane.showMessageDialog(this, result.getMessage());
         clearCreateFields();
         updateAllCombos();
@@ -228,7 +231,7 @@ public class ProductGroupForm extends JFrame {
             return;
         }
         ProductGroupEntity updatedGroup = new ProductGroupEntity(newName, newDesc);
-        Result result = controller.update(selectedGroup.getId(), updatedGroup);
+        Result result = groupController.update(selectedGroup.getId(), updatedGroup);
         JOptionPane.showMessageDialog(this, result.getMessage());
         clearUpdateFields();
         updateAllCombos();
@@ -248,7 +251,8 @@ public class ProductGroupForm extends JFrame {
                 "Ви впевнені, що хочете видалити групу " + selectedGroup.getName() + "?", "Підтвердження",
                 JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
-            Result result = controller.delete(selectedGroup.getId());
+            productController.deleteAllProdutsByGroupId(selectedGroup.getId());
+            Result result = groupController.delete(selectedGroup.getId());
             JOptionPane.showMessageDialog(this, result.getMessage());
             updateAllCombos();
         }
@@ -261,8 +265,7 @@ public class ProductGroupForm extends JFrame {
     private void handleViewSingle() {
         ProductGroupEntity selectedGroup = (ProductGroupEntity) viewComboBox.getSelectedItem();
         if (selectedGroup != null) {
-            viewTextArea.setText("Назва: " + selectedGroup.getName() +
-                    "\nОпис: " + selectedGroup.getDescription());
+            viewTextArea.setText(selectedGroup.fullName());
         } else {
             viewTextArea.setText("");
         }
@@ -273,13 +276,11 @@ public class ProductGroupForm extends JFrame {
      * Отримує всі групи через контролер та відображає їх.
      */
     private void refreshAllGroups() {
-        List<ProductGroupEntity> groups = controller.getAll();
+        List<ProductGroupEntity> groups = groupController.getAll();
         StringBuilder sb = new StringBuilder();
-        for (ProductGroupEntity group : groups) {
-            sb.append("Назва: ").append(group.getName())
-                    .append("\nОпис: ").append(group.getDescription())
-                    .append("\n\n");
-        }
+        for (ProductGroupEntity group : groups)
+            sb.append(group.fullName()).append("\n\n");
+
         viewAllTextArea.setText(sb.toString());
     }
 
@@ -287,7 +288,7 @@ public class ProductGroupForm extends JFrame {
      * Оновлення випадаючих списків на основі актуальних даних груп.
      */
     private void updateAllCombos() {
-        List<ProductGroupEntity> groups = controller.getAll();
+        List<ProductGroupEntity> groups = groupController.getAll();
         updateComboBox.removeAllItems();
         deleteComboBox.removeAllItems();
         viewComboBox.removeAllItems();
