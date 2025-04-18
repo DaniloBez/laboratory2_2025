@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 /**
  * Сервіс для роботи з продуктами.
@@ -106,13 +107,18 @@ public class ProductService {
      * @return Список знайдених продуктів.
      */
     public List<ProductEntity> findAllByRegExp(String regExp){
-        List<ProductEntity> productEntities = new ArrayList<>();
-        for(ProductEntity productEntity : getAll()){
-            Matcher matcher = Pattern.compile(regExp).matcher(productEntity.getName());
-            if(matcher.find())
-                productEntities.add(productEntity);
+        try{
+            List<ProductEntity> productEntities = new ArrayList<>();
+            for(ProductEntity productEntity : getAll()){
+                Matcher matcher = Pattern.compile(regExp).matcher(productEntity.getName());
+                if(matcher.find())
+                    productEntities.add(productEntity);
+            }
+            return productEntities;
         }
-        return productEntities;
+        catch(PatternSyntaxException e){
+            return null; //TODO Потрібно додати обробку цього винятку у productForm
+        }
     }
     /**
      * Змінює кількість товару на складі.

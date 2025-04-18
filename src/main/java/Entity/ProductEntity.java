@@ -86,6 +86,18 @@ public class ProductEntity {
     }
 
     /**
+     * Повертає повну назву товару без id.
+     * @return повна назва
+     */
+    public String fullName() {
+        return "Назва: " + name + "\n" +
+                "Опис: " + description + "\n" +
+                "Виробник: " + manufacturer + "\n" +
+                "Кількість на складі: " + quantityInStock + "\n" +
+                "Ціна за одиницю: " + pricePerUnit;
+    }
+
+    /**
      * Повертає рядкове представлення продукту.
      *
      * @return рядок, що містить інформацію про продукт
