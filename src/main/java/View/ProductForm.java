@@ -40,9 +40,10 @@ public class ProductForm extends JFrame {
     private JComboBox<ProductEntity> viewComboBox;
     private JTextArea viewTextArea;
 
-    // Компоненти для вкладки "Перегляд усіх об'єктів"
+    // Компоненти для вкладки "Пошук товарів"
     private JTextArea viewAllTextArea;
     private JButton refreshButton;
+    private JTextField filterField;
 
     /**
      * Конструктор, що ініціалізує форму, встановлює вигляд та компоненти.
@@ -249,15 +250,37 @@ public class ProductForm extends JFrame {
 
         viewComboBox.addActionListener(e -> handleViewSingle());
 
-        // --------------------- Вкладка "Перегляд усіх" ---------------------
+        // --------------------- Вкладка "Пошук товарів" ---------------------
         JPanel viewAllPanel = new JPanel(new BorderLayout());
+
+        // Панель для вводу фільтра
+        JPanel inputPanel = new JPanel(new BorderLayout());
+        inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+        JLabel inputLabel = new JLabel("Пошук:");
+        filterField = new JTextField();
+
+        JPanel inputGroup = new JPanel(new BorderLayout(5, 0));
+        inputGroup.add(inputLabel, BorderLayout.WEST);
+        inputGroup.add(filterField, BorderLayout.CENTER);
+
+        inputPanel.add(inputGroup, BorderLayout.NORTH);
+
+        // Текстова область
         viewAllTextArea = new JTextArea();
         viewAllTextArea.setEditable(false);
         JScrollPane scrollAll = new JScrollPane(viewAllTextArea);
-        viewAllPanel.add(scrollAll, BorderLayout.CENTER);
 
+        // Кнопка оновлення
         refreshButton = new JButton("Оновити список продуктів");
-        refreshButton.addActionListener(e -> refreshAllProducts());
+        refreshButton.addActionListener(e -> {
+            displayFilteredProducts();
+        });
+        filterField.addActionListener(e -> displayFilteredProducts());
+
+        // Додаємо компоненти
+        viewAllPanel.add(inputPanel, BorderLayout.NORTH);
+        viewAllPanel.add(scrollAll, BorderLayout.CENTER);
         viewAllPanel.add(refreshButton, BorderLayout.SOUTH);
 
         // --------------------- Додаємо всі вкладки до таб-панелі ---------------------
@@ -265,7 +288,7 @@ public class ProductForm extends JFrame {
         tabbedPane.addTab("Оновити", updatePanel);
         tabbedPane.addTab("Видалити", deletePanel);
         tabbedPane.addTab("Перегляд", viewPanel);
-        tabbedPane.addTab("Перегляд усіх", viewAllPanel);
+        tabbedPane.addTab("Пошук товарів", viewAllPanel);
 
         getContentPane().add(tabbedPane, BorderLayout.CENTER);
     }
@@ -449,20 +472,43 @@ public class ProductForm extends JFrame {
     }
 
     /**
-     * Оновлення текстової області для перегляду усіх продуктів.
-     * Отримує всі групи через контролер та відображає їх.
+     * Відображає відфільтрований список продуктів у текстовому полі.
+     * <p>
+     * Застосовує регулярний вираз із текстового поля як фільтр до назв продуктів.
+     * Якщо регулярний вираз некоректний або продуктів не знайдено — виводиться відповідне повідомлення.
+     * Інакше відображається список продуктів з основною інформацією про кожен.
      */
-    private void refreshAllProducts() {
-        List<ProductEntity> products = productController.getAll();
+    private void displayFilteredProducts() {
+        String filterText = filterField.getText().trim();
+        List<ProductEntity> products = productController.findAllByRegExp(filterText);
+
         StringBuilder sb = new StringBuilder();
-        for (ProductEntity product : products) {
-            sb.append("Назва: ").append(product.getName())
-                    .append("\nОпис: ").append(product.getDescription())
-                    .append("\nМануфактура: ").append(product.getManufacturer())
-                    .append("\nКількість на складі: ").append(product.getQuantityInStock())
-                    .append("\nЦіна за одиницю: ").append(product.getPricePerUnit())
-                    .append("\n\n");
+
+        if (products == null) {
+            sb.append("Помилка: Невірний синтаксис регулярного виразу");
+        } else if (products.isEmpty()) {
+            sb.append("Не знайдено продуктів");
+            if (!filterText.isEmpty() && !"*".equals(filterText)) {
+                sb.append(" за вказаним фільтром: ").append(filterText);
+            }
+        } else {
+            sb.append("Список продуктів");
+            if (!filterText.isEmpty() && !"*".equals(filterText)) {
+                sb.append(" (фільтр: ").append(filterText).append(")");
+            }
+            sb.append(" (").append(products.size()).append("):\n\n");
+
+            products.forEach(product -> sb.append(String.format(
+                    "Назва: %s\nОпис: %s\nВиробник: %s\nКількість: %.2f\nЦіна: %.2f\nГрупа: %s\n\n",
+                    product.getName(),
+                    product.getDescription(),
+                    product.getManufacturer(),
+                    product.getQuantityInStock(),
+                    product.getPricePerUnit(),
+                    productGroupController.findById(product.getProductGroupId())
+            )));
         }
+
         viewAllTextArea.setText(sb.toString());
     }
 
@@ -472,7 +518,6 @@ public class ProductForm extends JFrame {
     private void updateAllCombos() {
         updateAllGroupCombos();
         updateAllProductCombos();
-        refreshAllProducts();
     }
 
     private void updateProductComboById(String groupId) {

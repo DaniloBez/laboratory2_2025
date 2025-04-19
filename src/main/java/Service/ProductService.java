@@ -109,6 +109,11 @@ public class ProductService {
     public List<ProductEntity> findAllByRegExp(String regExp){
         try{
             List<ProductEntity> productEntities = new ArrayList<>();
+
+            if ("*".equals(regExp)) {
+                return new ArrayList<>(getAll());
+            }
+
             for(ProductEntity productEntity : getAll()){
                 Matcher matcher = Pattern.compile(regExp).matcher(productEntity.getName());
                 if(matcher.find())
