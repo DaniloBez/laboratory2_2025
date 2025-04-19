@@ -1,13 +1,9 @@
 package View;
 
-import Controller.ProductGroupController;
 import Entity.ProductGroupEntity;
 import Utils.JMenuBarUtil;
-import Utils.Result;
 
 import javax.swing.*;
-import java.awt.*;
-import java.util.List;
 
 public class MainForm extends JFrame {
     private JMenuBar menuBar;
