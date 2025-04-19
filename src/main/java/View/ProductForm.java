@@ -33,6 +33,7 @@ public class ProductForm extends JFrame {
 
     // Компоненти для вкладки "Видалити"
     private JComboBox<ProductEntity> deleteComboBoxProduct;
+    private JComboBox<ProductGroupEntity> deleteComboBoxGroup;
     private JButton deleteButton;
 
     // Компоненти для вкладки "Перегляд" (інформація про об'єкт)
@@ -200,17 +201,30 @@ public class ProductForm extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
+        deletePanel.add(new JLabel("Оберіть групу до якої належить:"), gbc);
+        gbc.gridx = 1;
+        deleteComboBoxGroup = new JComboBox<>();
+        deletePanel.add(deleteComboBoxGroup, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         deletePanel.add(new JLabel("Оберіть продукт для видалення:"), gbc);
         gbc.gridx = 1;
         deleteComboBoxProduct = new JComboBox<>();
         deletePanel.add(deleteComboBoxProduct, gbc);
 
         gbc.gridx = 1;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         deleteButton = new JButton("Видалити продукт");
         deletePanel.add(deleteButton, gbc);
 
         deleteButton.addActionListener(e -> handleDelete());
+        deleteComboBoxGroup.addActionListener(e -> {
+            ProductGroupEntity selectedGroup = (ProductGroupEntity) deleteComboBoxGroup.getSelectedItem();
+            if (selectedGroup != null) {
+                updateProductComboById(selectedGroup.getId());
+            }
+        });
 
         // --------------------- Вкладка "Перегляд" ---------------------
         JPanel viewPanel = new JPanel(new GridBagLayout());
@@ -220,7 +234,7 @@ public class ProductForm extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        viewPanel.add(new JLabel("Оберіть групу для перегляду:"), gbc);
+        viewPanel.add(new JLabel("Оберіть продукт для перегляду:"), gbc);
         gbc.gridx = 1;
         viewComboBox = new JComboBox<>();
         viewPanel.add(viewComboBox, gbc);
@@ -242,7 +256,7 @@ public class ProductForm extends JFrame {
         JScrollPane scrollAll = new JScrollPane(viewAllTextArea);
         viewAllPanel.add(scrollAll, BorderLayout.CENTER);
 
-        refreshButton = new JButton("Оновити список груп");
+        refreshButton = new JButton("Оновити список продуктів");
         refreshButton.addActionListener(e -> refreshAllProducts());
         viewAllPanel.add(refreshButton, BorderLayout.SOUTH);
 
@@ -395,6 +409,13 @@ public class ProductForm extends JFrame {
      * Підтверджує видалення продукта та викликає метод видалення продукта в контролері.
      */
     private void handleDelete() {
+        ProductGroupEntity selectedGroup = (ProductGroupEntity) deleteComboBoxGroup.getSelectedItem();
+        if (selectedGroup == null) {
+            JOptionPane.showMessageDialog(this, "Оберіть групу для видалення.", "Помилка", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        updateProductComboById(selectedGroup.getId());
+
         ProductEntity selectedProduct = (ProductEntity) deleteComboBoxProduct.getSelectedItem();
         if (selectedProduct == null) {
             JOptionPane.showMessageDialog(this, "Оберіть продукт для видалення.", "Помилка", JOptionPane.ERROR_MESSAGE);
@@ -454,15 +475,25 @@ public class ProductForm extends JFrame {
         refreshAllProducts();
     }
 
+    private void updateProductComboById(String groupId) {
+        List<ProductEntity> products = productController.findAllByGroupId(groupId);
+        deleteComboBoxProduct.removeAllItems();
+
+        for (ProductEntity product : products) {
+            deleteComboBoxProduct.addItem(product);
+        }
+    }
+
     private void updateAllGroupCombos() {
         List<ProductGroupEntity> groups = productGroupController.getAll();
         createComboBoxGroup.removeAllItems();
         updateComboBoxGroup.removeAllItems();
-
+        deleteComboBoxGroup.removeAllItems();
 
         for (ProductGroupEntity group : groups) {
             createComboBoxGroup.addItem(group);
             updateComboBoxGroup.addItem(group);
+            deleteComboBoxGroup.addItem(group);
         }
     }
 
@@ -470,12 +501,10 @@ public class ProductForm extends JFrame {
     private void updateAllProductCombos() {
         List<ProductEntity> products = productController.getAll();
         updateComboBoxProduct.removeAllItems();
-        deleteComboBoxProduct.removeAllItems();
         viewComboBox.removeAllItems();
 
         for (ProductEntity product : products) {
             updateComboBoxProduct.addItem(product);
-            deleteComboBoxProduct.addItem(product);
             viewComboBox.addItem(product);
         }
     }
