@@ -1,6 +1,8 @@
 package View;
 
+import Controller.ProductController;
 import Controller.ProductGroupController;
+import Entity.ProductEntity;
 import Entity.ProductGroupEntity;
 import Utils.JMenuBarUtil;
 import Utils.Result;
@@ -8,37 +10,47 @@ import Utils.Result;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import java.util.Objects;
 
+/**
+ * Клас для створення форми управління продуктами.
+ * Має вкладки для створення, оновлення, видалення, перегляду однієї групи та перегляду всіх продуктів.
+ */
 public class ProductForm extends JFrame {
-    private ProductGroupController controller;
-
-    private JMenuBar menuBar;
+    private final ProductController productController;
+    private final ProductGroupController productGroupController;
 
     // Компоненти для вкладки "Створити"
-    private JTextField createNameField, createDescField;
+    private JComboBox<ProductGroupEntity> createComboBoxGroup;
+    private JTextField createNameField, createDescField, createManufacturerField, createQuantityInStockField, createPriceField;
     private JButton createButton;
 
     // Компоненти для вкладки "Оновити"
-    private JComboBox<ProductGroupEntity> updateComboBox;
-    private JTextField updateNameField, updateDescField;
+    private JComboBox<ProductGroupEntity> updateComboBoxGroup;
+    private JComboBox<ProductEntity> updateComboBoxProduct;
+    private JTextField updateNameField, updateDescField, updateManufacturerField, updateQuantityInStockField, updatePriceField;
     private JButton updateButton;
 
     // Компоненти для вкладки "Видалити"
-    private JComboBox<ProductGroupEntity> deleteComboBox;
+    private JComboBox<ProductEntity> deleteComboBoxProduct;
     private JButton deleteButton;
 
     // Компоненти для вкладки "Перегляд" (інформація про об'єкт)
-    private JComboBox<ProductGroupEntity> viewComboBox;
+    private JComboBox<ProductEntity> viewComboBox;
     private JTextArea viewTextArea;
 
     // Компоненти для вкладки "Перегляд усіх об'єктів"
     private JTextArea viewAllTextArea;
     private JButton refreshButton;
 
+    /**
+     * Конструктор, що ініціалізує форму, встановлює вигляд та компоненти.
+     */
     public ProductForm() {
-        controller = ProductGroupController.getInstance();
+        productController = ProductController.getInstance();
+        productGroupController = ProductGroupController.getInstance();
 
-        setTitle("Форма управління товарами");
+        setTitle("Форма управління продуктами товарів");
         setSize(800, 600);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -51,13 +63,16 @@ public class ProductForm extends JFrame {
         }
 
         initComponents();
-        //updateAllCombos();
+        updateAllCombos();
     }
 
+    /**
+     * Ініціалізує всі компоненти форми.
+     */
     private void initComponents() {
-        menuBar = JMenuBarUtil.getMenuBar();
+        JMenuBar menuBar = JMenuBarUtil.getMenuBar();
         setJMenuBar(menuBar);
-        /*
+
         JTabbedPane tabbedPane = new JTabbedPane();
 
         // --------------------- Вкладка "Створити" ---------------------
@@ -68,21 +83,49 @@ public class ProductForm extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        createPanel.add(new JLabel("Назва групи:"), gbc);
+        createPanel.add(new JLabel("Оберіть групу до якої належить продукт:"), gbc);
+        gbc.gridx = 1;
+        createComboBoxGroup = new JComboBox<>();
+        createPanel.add(createComboBoxGroup, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        createPanel.add(new JLabel("Назва продукту:"), gbc);
         gbc.gridx = 1;
         createNameField = new JTextField(20);
         createPanel.add(createNameField, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 1;
-        createPanel.add(new JLabel("Опис групи:"), gbc);
+        gbc.gridy = 2;
+        createPanel.add(new JLabel("Опис продукту:"), gbc);
         gbc.gridx = 1;
         createDescField = new JTextField(20);
         createPanel.add(createDescField, gbc);
 
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        createPanel.add(new JLabel("Мануфактура:"), gbc);
         gbc.gridx = 1;
-        gbc.gridy = 2;
-        createButton = new JButton("Створити групу");
+        createManufacturerField = new JTextField(20);
+        createPanel.add(createManufacturerField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        createPanel.add(new JLabel("Кількість на складі:"), gbc);
+        gbc.gridx = 1;
+        createQuantityInStockField = new JTextField(20);
+        createPanel.add(createQuantityInStockField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        createPanel.add(new JLabel("Ціна за одиницю:"), gbc);
+        gbc.gridx = 1;
+        createPriceField = new JTextField(20);
+        createPanel.add(createPriceField, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 6;
+        createButton = new JButton("Створити продукт");
         createPanel.add(createButton, gbc);
 
         createButton.addActionListener(e -> handleCreate());
@@ -95,10 +138,10 @@ public class ProductForm extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        updatePanel.add(new JLabel("Оберіть групу для оновлення:"), gbc);
+        updatePanel.add(new JLabel("Оберіть продукт для оновлення:"), gbc);
         gbc.gridx = 1;
-        updateComboBox = new JComboBox<>();
-        updatePanel.add(updateComboBox, gbc);
+        updateComboBoxProduct = new JComboBox<>();
+        updatePanel.add(updateComboBoxProduct, gbc);
 
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -114,9 +157,37 @@ public class ProductForm extends JFrame {
         updateDescField = new JTextField(20);
         updatePanel.add(updateDescField, gbc);
 
-        gbc.gridx = 1;
+        gbc.gridx = 0;
         gbc.gridy = 3;
-        updateButton = new JButton("Оновити групу");
+        updatePanel.add(new JLabel("Нова мануфактура:"), gbc);
+        gbc.gridx = 1;
+        updateManufacturerField = new JTextField(20);
+        updatePanel.add(updateManufacturerField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 4;
+        updatePanel.add(new JLabel("Нова кількість на складі:"), gbc);
+        gbc.gridx = 1;
+        updateQuantityInStockField = new JTextField(20);
+        updatePanel.add(updateQuantityInStockField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 5;
+        updatePanel.add(new JLabel("Нова ціна за одиницю:"), gbc);
+        gbc.gridx = 1;
+        updatePriceField = new JTextField(20);
+        updatePanel.add(updatePriceField, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 6;
+        updatePanel.add(new JLabel("Оберіть нову групу для продукта:"), gbc);
+        gbc.gridx = 1;
+        updateComboBoxGroup = new JComboBox<>();
+        updatePanel.add(updateComboBoxGroup, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 7;
+        updateButton = new JButton("Оновити продукт");
         updatePanel.add(updateButton, gbc);
 
         updateButton.addActionListener(e -> handleUpdate());
@@ -129,14 +200,14 @@ public class ProductForm extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
-        deletePanel.add(new JLabel("Оберіть групу для видалення:"), gbc);
+        deletePanel.add(new JLabel("Оберіть продукт для видалення:"), gbc);
         gbc.gridx = 1;
-        deleteComboBox = new JComboBox<>();
-        deletePanel.add(deleteComboBox, gbc);
+        deleteComboBoxProduct = new JComboBox<>();
+        deletePanel.add(deleteComboBoxProduct, gbc);
 
         gbc.gridx = 1;
         gbc.gridy = 1;
-        deleteButton = new JButton("Видалити групу");
+        deleteButton = new JButton("Видалити продукт");
         deletePanel.add(deleteButton, gbc);
 
         deleteButton.addActionListener(e -> handleDelete());
@@ -172,7 +243,7 @@ public class ProductForm extends JFrame {
         viewAllPanel.add(scrollAll, BorderLayout.CENTER);
 
         refreshButton = new JButton("Оновити список груп");
-        refreshButton.addActionListener(e -> refreshAllGroups());
+        refreshButton.addActionListener(e -> refreshAllProducts());
         viewAllPanel.add(refreshButton, BorderLayout.SOUTH);
 
         // --------------------- Додаємо всі вкладки до таб-панелі ---------------------
@@ -182,106 +253,253 @@ public class ProductForm extends JFrame {
         tabbedPane.addTab("Перегляд", viewPanel);
         tabbedPane.addTab("Перегляд усіх", viewAllPanel);
 
-        getContentPane().add(tabbedPane, BorderLayout.CENTER);*/
+        getContentPane().add(tabbedPane, BorderLayout.CENTER);
     }
 
-    // Обробка створення нової групи
+    /**
+     * Обробляє створення нового продукту.
+     */
     private void handleCreate() {
+        ProductGroupEntity selectedGroup = (ProductGroupEntity) updateComboBoxGroup.getSelectedItem();
+        if (selectedGroup == null) return;
+
         String name = createNameField.getText().trim();
         String description = createDescField.getText().trim();
-        if (name.isEmpty() || description.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Будь ласка, заповніть всі поля.", "Помилка", JOptionPane.ERROR_MESSAGE);
+        String manufacturer = createManufacturerField.getText().trim();
+        String quantityText = createQuantityInStockField.getText().trim();
+        String priceText = createPriceField.getText().trim();
+
+        // Валідація обов'язкових текстових полів
+        if (!validateRequiredTextFields(name, description, manufacturer)) {
             return;
         }
-        ProductGroupEntity newGroup = new ProductGroupEntity(name, description);
-        Result result = controller.create(newGroup);
+
+        // Валідація кількості
+        Double quantityInStock = validatePositiveNumber(quantityText, "Кількість товару повинна бути більше 0.");
+        if (quantityInStock == null) return;
+
+        // Валідація ціни
+        Double price = validatePositiveNumber(priceText, "Ціна товару повинна бути більше 0.");
+        if (price == null) return;
+
+        ProductEntity newProduct = new ProductEntity(name, description, manufacturer,
+                quantityInStock, price, selectedGroup.getId());
+        Result result = productController.create(newProduct);
         JOptionPane.showMessageDialog(this, result.getMessage());
         clearCreateFields();
         updateAllCombos();
     }
 
-    // Обробка оновлення вибраної групи
+
+
+    /**
+     * Обробляє оновлення вибраного продукту.
+     *
+     * <p>Якщо група залишається незмінною - всі поля обов'язкові.
+     * При зміні групи - інші поля стають необов'язковими (можна лише перенести продукт в іншу групу).</p>
+     *
+     * <p>Ціна та кількість товару повинні бути більше 0.</p>
+     */
     private void handleUpdate() {
-        ProductGroupEntity selectedGroup = (ProductGroupEntity) updateComboBox.getSelectedItem();
-        if (selectedGroup == null) {
-            JOptionPane.showMessageDialog(this, "Оберіть групу для оновлення.", "Помилка", JOptionPane.ERROR_MESSAGE);
+        ProductGroupEntity selectedGroup = (ProductGroupEntity) updateComboBoxGroup.getSelectedItem();
+        ProductEntity selectedProduct = (ProductEntity) updateComboBoxProduct.getSelectedItem();
+        if (selectedGroup == null || selectedProduct == null) {
+            JOptionPane.showMessageDialog(this, "Оберіть продукт для оновлення.", "Помилка", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
         String newName = updateNameField.getText().trim();
         String newDesc = updateDescField.getText().trim();
-        if (newName.isEmpty() || newDesc.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Будь ласка, заповніть всі поля оновлення.", "Помилка", JOptionPane.ERROR_MESSAGE);
+        String newManufacturer = updateManufacturerField.getText().trim();
+        String quantityText = updateQuantityInStockField.getText().trim();
+        String priceText = updatePriceField.getText().trim();
+
+        boolean groupChanged = !Objects.equals(selectedGroup.getId(), selectedProduct.getProductGroupId());
+
+        if (!groupChanged && !validateRequiredTextFields(newName, newDesc, newManufacturer, quantityText, priceText)) {
             return;
         }
-        ProductGroupEntity updatedGroup = new ProductGroupEntity(newName, newDesc);
-        Result result = controller.update(selectedGroup.getId(), updatedGroup);
+
+        Double newQuantityInStock = validateQuantity(quantityText, groupChanged, selectedProduct);
+        if (newQuantityInStock == null) return;
+
+        Double newPrice = validatePrice(priceText, groupChanged, selectedProduct);
+        if (newPrice == null) return;
+
+        String finalName = newName.isEmpty() && groupChanged ? selectedProduct.getName() : newName;
+        String finalDesc = newDesc.isEmpty() && groupChanged ? selectedProduct.getDescription() : newDesc;
+        String finalManufacturer = newManufacturer.isEmpty() && groupChanged ?
+                selectedProduct.getManufacturer() : newManufacturer;
+
+        ProductEntity updatedProduct = new ProductEntity(
+                finalName, finalDesc, finalManufacturer,
+                newQuantityInStock, newPrice, selectedGroup.getId()
+        );
+
+        Result result = productController.update(selectedProduct.getId(), updatedProduct);
         JOptionPane.showMessageDialog(this, result.getMessage());
         clearUpdateFields();
         updateAllCombos();
     }
 
-    // Обробка видалення вибраної групи
+    private Double validateQuantity(String quantityText, boolean groupChanged, ProductEntity product) {
+        if (quantityText.isEmpty() && groupChanged) {
+            return product.getQuantityInStock();
+        }
+        return validatePositiveNumber(quantityText, "Кількість товару повинна бути більше 0.");
+    }
+
+    private Double validatePrice(String priceText, boolean groupChanged, ProductEntity product) {
+        if (priceText.isEmpty() && groupChanged) {
+            return product.getPricePerUnit();
+        }
+        return validatePositiveNumber(priceText, "Ціна товару повинна бути більше 0.");
+    }
+
+    /**
+     * Валідує обов'язкові текстові поля.
+     */
+    private boolean validateRequiredTextFields(String... fields) {
+        for (String field : fields) {
+            if (field.isEmpty()) {
+                JOptionPane.showMessageDialog(this,
+                        "Будь ласка, заповніть всі обов'язкові поля.",
+                        "Помилка", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Валідує позитивне числове значення.
+     */
+    private Double validatePositiveNumber(String numberText, String errorMessage) {
+        try {
+            double value = Double.parseDouble(numberText);
+            if (value <= 0) {
+                JOptionPane.showMessageDialog(this, errorMessage, "Помилка", JOptionPane.ERROR_MESSAGE);
+                return null;
+            }
+            return value;
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Невірний формат числового поля.", "Помилка", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
+    }
+
+
+    /**
+     * Обробка видалення вибраного продукта.
+     * Підтверджує видалення продукта та викликає метод видалення продукта в контролері.
+     */
     private void handleDelete() {
-        ProductGroupEntity selectedGroup = (ProductGroupEntity) deleteComboBox.getSelectedItem();
-        if (selectedGroup == null) {
-            JOptionPane.showMessageDialog(this, "Оберіть групу для видалення.", "Помилка", JOptionPane.ERROR_MESSAGE);
+        ProductEntity selectedProduct = (ProductEntity) deleteComboBoxProduct.getSelectedItem();
+        if (selectedProduct == null) {
+            JOptionPane.showMessageDialog(this, "Оберіть продукт для видалення.", "Помилка", JOptionPane.ERROR_MESSAGE);
             return;
         }
         int confirm = JOptionPane.showConfirmDialog(this,
-                "Ви впевнені, що хочете видалити групу " + selectedGroup.getName() + "?", "Підтвердження",
+                "Ви впевнені, що хочете видалити продукт " + selectedProduct.getName() + "?", "Підтвердження",
                 JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
-            Result result = controller.delete(selectedGroup.getId());
+            Result result = productController.delete(selectedProduct.getId());
             JOptionPane.showMessageDialog(this, result.getMessage());
             updateAllCombos();
         }
     }
 
-    // Обробка перегляду інформації про вибрану групу
+    /**
+     * Обробка перегляду інформації про вибраний продукт.
+     * Виводить деталі продукта у текстову область.
+     */
     private void handleViewSingle() {
-        ProductGroupEntity selectedGroup = (ProductGroupEntity) viewComboBox.getSelectedItem();
-        if (selectedGroup != null) {
-            viewTextArea.setText("Назва: " + selectedGroup.getName() +
-                    "\nОпис: " + selectedGroup.getDescription());
+        ProductEntity selectedProduct = (ProductEntity) viewComboBox.getSelectedItem();
+        if (selectedProduct != null) {
+            viewTextArea.setText("Назва: " + selectedProduct.getName() +
+                    "\nОпис: " + selectedProduct.getDescription() +
+                    "\nМануфактура: " + selectedProduct.getManufacturer() +
+                    "\nКількість на складі: " + selectedProduct.getQuantityInStock() +
+                    "\nЦіна за одиницю: " + selectedProduct.getPricePerUnit());
         } else {
             viewTextArea.setText("");
         }
     }
 
-    // Оновлення текстової області для перегляду усіх груп
-    private void refreshAllGroups() {
-        List<ProductGroupEntity> groups = controller.getAll();
+    /**
+     * Оновлення текстової області для перегляду усіх продуктів.
+     * Отримує всі групи через контролер та відображає їх.
+     */
+    private void refreshAllProducts() {
+        List<ProductEntity> products = productController.getAll();
         StringBuilder sb = new StringBuilder();
-        for (ProductGroupEntity group : groups) {
-            sb.append("Назва: ").append(group.getName())
-                    .append("\nОпис: ").append(group.getDescription())
+        for (ProductEntity product : products) {
+            sb.append("Назва: ").append(product.getName())
+                    .append("\nОпис: ").append(product.getDescription())
+                    .append("\nМануфактура: ").append(product.getManufacturer())
+                    .append("\nКількість на складі: ").append(product.getQuantityInStock())
+                    .append("\nЦіна за одиницю: ").append(product.getPricePerUnit())
                     .append("\n\n");
         }
         viewAllTextArea.setText(sb.toString());
     }
 
-    // Оновлюємо всі випадаючі списки на основі поточних даних
+    /**
+     * Оновлення випадаючих списків на основі актуальних даних продуктів.
+     */
     private void updateAllCombos() {
-        List<ProductGroupEntity> groups = controller.getAll();
-        updateComboBox.removeAllItems();
-        deleteComboBox.removeAllItems();
-        viewComboBox.removeAllItems();
-
-        for (ProductGroupEntity group : groups) {
-            updateComboBox.addItem(group);
-            deleteComboBox.addItem(group);
-            viewComboBox.addItem(group);
-        }
-        refreshAllGroups();
+        updateAllGroupCombos();
+        updateAllProductCombos();
+        refreshAllProducts();
     }
 
+    private void updateAllGroupCombos() {
+        List<ProductGroupEntity> groups = productGroupController.getAll();
+        createComboBoxGroup.removeAllItems();
+        updateComboBoxGroup.removeAllItems();
+
+
+        for (ProductGroupEntity group : groups) {
+            createComboBoxGroup.addItem(group);
+            updateComboBoxGroup.addItem(group);
+        }
+    }
+
+
+    private void updateAllProductCombos() {
+        List<ProductEntity> products = productController.getAll();
+        updateComboBoxProduct.removeAllItems();
+        deleteComboBoxProduct.removeAllItems();
+        viewComboBox.removeAllItems();
+
+        for (ProductEntity product : products) {
+            updateComboBoxProduct.addItem(product);
+            deleteComboBoxProduct.addItem(product);
+            viewComboBox.addItem(product);
+        }
+    }
+
+
+    /**
+     * Очищає поля для створення нового продукту.
+     */
     private void clearCreateFields() {
         createNameField.setText("");
         createDescField.setText("");
+        createManufacturerField.setText("");
+        createQuantityInStockField.setText("");
+        createPriceField.setText("");
     }
 
+    /**
+     * Очищає поля для оновлення продукту.
+     */
     private void clearUpdateFields() {
-        updateNameField.setText("");
-        updateDescField.setText("");
+        createNameField.setText("");
+        createDescField.setText("");
+        createManufacturerField.setText("");
+        createQuantityInStockField.setText("");
+        createPriceField.setText("");
     }
 }
