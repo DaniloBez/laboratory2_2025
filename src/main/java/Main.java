@@ -1,5 +1,7 @@
 import Controller.ProductController;
+import Controller.ProductGroupController;
 import Entity.ProductEntity;
+import Entity.ProductGroupEntity;
 import Utils.JMenuBarUtil;
 import View.MainForm;
 import View.ProductForm;
@@ -8,7 +10,10 @@ import View.ProductGroupForm;
 public class Main {
     public static void main(String[] args) {
         ProductController controller = ProductController.getInstance();
-        controller.create(new ProductEntity("name", "description", "manufacturer", 10, 10, "241315be-19e2-4651-942a-c2bfad244d40"));
+        ProductGroupController groupController = ProductGroupController.getInstance();
+        ProductGroupEntity groupEntity = new ProductGroupEntity("Test group", "Test description");
+        groupController.create(groupEntity);
+        controller.create(new ProductEntity("name", "description", "manufacturer", 10, 10, groupEntity.getId()));
 
 
         MainForm mainForm = new MainForm();
