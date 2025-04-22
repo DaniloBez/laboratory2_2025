@@ -1,16 +1,21 @@
 package View;
 
-import Entity.ProductGroupEntity;
 import Utils.JMenuBarUtil;
-
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 import java.util.Objects;
 
+/**
+ * Головна форма додатку для автоматизації роботи складом.
+ * Відображає основну інформацію про програму та забезпечує навігацію до інших форм.
+ */
 public class MainForm extends JFrame {
     private JMenuBar menuBar;
 
+    /**
+     * Конструктор головної форми.
+     * Ініціалізує форму, встановлює параметри вікна та ініціалізує компоненти.
+     */
     public MainForm() {
         setTitle("Main");
         setSize(800, 600);
@@ -27,6 +32,10 @@ public class MainForm extends JFrame {
         initComponents();
     }
 
+    /**
+     * Ініціалізація компонентів форми.
+     * Створює меню, встановлює фонове зображення та додає інформаційні тексти.
+     */
     private void initComponents() {
         menuBar = JMenuBarUtil.getMenuBar();
         setJMenuBar(menuBar);
@@ -70,14 +79,25 @@ public class MainForm extends JFrame {
     }
 }
 
+/**
+ * Кастомна JPanel з можливістю відображення фонового зображення.
+ */
 class BackgroundPanel extends JPanel {
     private Image backgroundImage;
 
+    /**
+     * Конструктор панелі з фоном.
+     * @param backgroundImage зображення для фону
+     */
     public BackgroundPanel(Image backgroundImage) {
         this.backgroundImage = backgroundImage;
         setLayout(new BorderLayout());
     }
 
+    /**
+     * Відображення фонового зображення.
+     * @param g об'єкт Graphics для малювання
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

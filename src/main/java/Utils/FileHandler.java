@@ -2,13 +2,26 @@ package Utils;
 
 import java.io.*;
 
+/**
+ * Клас {@code FileHandler} відповідає за створення, читання та запис JSON-рядків у файл.
+ */
 public class FileHandler {
     private final String filePath;
 
+    /**
+     * Створює об'єкт {@code FileHandler} для роботи з файлом за вказаним шляхом.
+     *
+     * @param filePath шлях до файлу
+     */
     public FileHandler(String filePath) {
         this.filePath = filePath;
     }
 
+    /**
+     * Створює файл, якщо він не існує.
+     *
+     * @return результат створення файлу
+     */
     public Result createFileIfNotExist() {
         File file = new File(filePath);
         if (!file.exists()) {
@@ -27,6 +40,12 @@ public class FileHandler {
         return new Result(true, "Файл вже існує!");
     }
 
+    /**
+     * Записує JSON-рядок у файл.
+     *
+     * @param jsonString JSON-рядок для запису
+     * @return результат запису
+     */
     public Result writeJSONStringInFile(String jsonString) {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(filePath));
@@ -40,6 +59,11 @@ public class FileHandler {
         }
     }
 
+    /**
+     * Зчитує JSON-рядок із файлу.
+     *
+     * @return результат зчитування (JSON або null, якщо файл порожній)
+     */
     public Result readJSONStringFromFile() {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(filePath));
