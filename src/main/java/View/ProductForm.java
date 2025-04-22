@@ -261,8 +261,8 @@ public class ProductForm extends JFrame {
     }
 
     // Оновлюємо всі випадаючі списки на основі поточних даних
-    private void updateAllCombos() {
-        List<ProductGroupEntity> groups = controller.getAll();
+    public void updateAllCombos() {
+        /*List<ProductGroupEntity> groups = controller.getAll();
         updateComboBox.removeAllItems();
         deleteComboBox.removeAllItems();
         viewComboBox.removeAllItems();
@@ -272,7 +272,7 @@ public class ProductForm extends JFrame {
             deleteComboBox.addItem(group);
             viewComboBox.addItem(group);
         }
-        refreshAllGroups();
+        refreshAllGroups();*/
     }
 
     private void clearCreateFields() {
