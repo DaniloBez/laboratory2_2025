@@ -38,6 +38,7 @@ public class ProductForm extends JFrame {
 
     // Компоненти для вкладки "Перегляд" (інформація про об'єкт)
     private JComboBox<ProductEntity> viewComboBox;
+    private JComboBox<ProductGroupEntity> viewComboBoxGroup;
     private JTextArea viewTextArea;
 
     // Компоненти для вкладки "Пошук товарів"
@@ -47,6 +48,7 @@ public class ProductForm extends JFrame {
 
     // Компоненти для вкладки "Додавання/списання товару"
     private JComboBox<ProductEntity> changeCountComboBox;
+    private JComboBox<ProductGroupEntity> changeCountComboBoxGroup;
     private JTextField changeCountField, currentCountField;
     private JButton changeCountButton;
 
@@ -241,19 +243,35 @@ public class ProductForm extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
+        viewPanel.add(new JLabel("Оберіть групу:"), gbc);
+        gbc.gridx = 1;
+        viewComboBoxGroup = new JComboBox<>();
+        viewPanel.add(viewComboBoxGroup, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         viewPanel.add(new JLabel("Оберіть продукт для перегляду:"), gbc);
         gbc.gridx = 1;
         viewComboBox = new JComboBox<>();
         viewPanel.add(viewComboBox, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         gbc.gridwidth = 2;
-        viewTextArea = new JTextArea(5, 30);
+        viewTextArea = new JTextArea(7, 30);
         viewTextArea.setEditable(false);
         JScrollPane scrollView = new JScrollPane(viewTextArea);
         viewPanel.add(scrollView, gbc);
 
+        // Додаємо слухач подій для комбобоксу груп
+        viewComboBoxGroup.addActionListener(e -> {
+            ProductGroupEntity selectedGroup = (ProductGroupEntity) viewComboBoxGroup.getSelectedItem();
+            if (selectedGroup != null) {
+                updateViewComboByGroupId(selectedGroup.getId());
+            }
+        });
+
+        // Додаємо слухач подій для комбобоксу продуктів
         viewComboBox.addActionListener(e -> handleViewSingle());
 
         // --------------------- Вкладка "Пошук товарів" ---------------------
@@ -289,7 +307,7 @@ public class ProductForm extends JFrame {
         viewAllPanel.add(scrollAll, BorderLayout.CENTER);
         viewAllPanel.add(refreshButton, BorderLayout.SOUTH);
 
-        // --------------------- Вкладка "Додавання/списання товару" ---------------------
+    // --------------------- Вкладка "Додавання/списання товару" ---------------------
         JPanel changeCountPanel = new JPanel(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 8, 8, 8);
@@ -297,32 +315,45 @@ public class ProductForm extends JFrame {
 
         gbc.gridx = 0;
         gbc.gridy = 0;
+        changeCountPanel.add(new JLabel("Оберіть групу:"), gbc);
+        gbc.gridx = 1;
+        changeCountComboBoxGroup = new JComboBox<>();
+        changeCountPanel.add(changeCountComboBoxGroup, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
         changeCountPanel.add(new JLabel("Оберіть продукт:"), gbc);
         gbc.gridx = 1;
         changeCountComboBox = new JComboBox<>();
         changeCountPanel.add(changeCountComboBox, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 1;
+        gbc.gridy = 2;
         changeCountPanel.add(new JLabel("Поточна кількість товару:"), gbc);
         gbc.gridx = 1;
         currentCountField = new JTextField(20);
         currentCountField.setEditable(false);
-        changeCountPanel.add(currentCountField, gbc);  // Виправлено тут
+        changeCountPanel.add(currentCountField, gbc);
 
         gbc.gridx = 0;
-        gbc.gridy = 2;
+        gbc.gridy = 3;
         changeCountPanel.add(new JLabel("Зміна кількості (введіть +або- число):"), gbc);
         gbc.gridx = 1;
         changeCountField = new JTextField(20);
         changeCountPanel.add(changeCountField, gbc);
 
         gbc.gridx = 1;
-        gbc.gridy = 3;
+        gbc.gridy = 4;
         changeCountButton = new JButton("Змінити кількість");
         changeCountPanel.add(changeCountButton, gbc);
 
-        // Додаємо слухач подій
+        changeCountComboBoxGroup.addActionListener(e -> {
+            ProductGroupEntity selectedGroup = (ProductGroupEntity) changeCountComboBoxGroup.getSelectedItem();
+            if (selectedGroup != null) {
+                updateChangeCountComboByGroupId(selectedGroup.getId());
+            }
+        });
+
         changeCountComboBox.addActionListener(e -> {
             ProductEntity selectedProduct = (ProductEntity) changeCountComboBox.getSelectedItem();
             if (selectedProduct != null) {
@@ -608,6 +639,30 @@ public class ProductForm extends JFrame {
     }
 
     /**
+     * Оновлює комбобокс продуктів для перегляду, фільтруючи по ID групи.
+     */
+    private void updateViewComboByGroupId(String groupId) {
+        List<ProductEntity> products = productController.findAllByGroupId(groupId);
+        viewComboBox.removeAllItems();
+
+        for (ProductEntity product : products) {
+            viewComboBox.addItem(product);
+        }
+    }
+
+    /**
+     * Оновлює комбобокс продуктів для зміни кількості, фільтруючи по ID групи.
+     */
+    private void updateChangeCountComboByGroupId(String groupId) {
+        List<ProductEntity> products = productController.findAllByGroupId(groupId);
+        changeCountComboBox.removeAllItems();
+
+        for (ProductEntity product : products) {
+            changeCountComboBox.addItem(product);
+        }
+    }
+
+    /**
      * Оновлює комбобокс продуктів для видалення, фільтруючи по ID групи.
      *
      * @param groupId ID групи продуктів для фільтрації
@@ -630,11 +685,15 @@ public class ProductForm extends JFrame {
         createComboBoxGroup.removeAllItems();
         updateComboBoxGroup.removeAllItems();
         deleteComboBoxGroup.removeAllItems();
+        viewComboBoxGroup.removeAllItems();
+        changeCountComboBoxGroup.removeAllItems();
 
         for (ProductGroupEntity group : groups) {
             createComboBoxGroup.addItem(group);
             updateComboBoxGroup.addItem(group);
             deleteComboBoxGroup.addItem(group);
+            viewComboBoxGroup.addItem(group);
+            changeCountComboBoxGroup.addItem(group);
         }
     }
 
