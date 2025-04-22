@@ -463,6 +463,9 @@ public class ProductForm extends JFrame {
         updateAllCombos();
     }
 
+    /**
+     * Валідує кількість товару. Якщо поле порожнє при зміні групи - повертає поточне значення.
+     */
     private Double validateQuantity(String quantityText, boolean groupChanged, ProductEntity product) {
         if (quantityText.isEmpty() && groupChanged) {
             return product.getQuantityInStock();
@@ -470,6 +473,9 @@ public class ProductForm extends JFrame {
         return validatePositiveNumber(quantityText, "Кількість товару повинна бути більше 0.");
     }
 
+    /**
+     * Валідує ціну товару. Якщо поле порожнє при зміні групи - повертає поточну ціну.
+     */
     private Double validatePrice(String priceText, boolean groupChanged, ProductEntity product) {
         if (priceText.isEmpty() && groupChanged) {
             return product.getPricePerUnit();
@@ -601,6 +607,11 @@ public class ProductForm extends JFrame {
         updateAllProductCombos();
     }
 
+    /**
+     * Оновлює комбобокс продуктів для видалення, фільтруючи по ID групи.
+     *
+     * @param groupId ID групи продуктів для фільтрації
+     */
     private void updateProductComboById(String groupId) {
         List<ProductEntity> products = productController.findAllByGroupId(groupId);
         deleteComboBoxProduct.removeAllItems();
@@ -610,6 +621,10 @@ public class ProductForm extends JFrame {
         }
     }
 
+    /**
+     * Оновлює всі комбобокси груп продуктів (для створення, оновлення та видалення).
+     * Завантажує актуальний список груп з контролера.
+     */
     private void updateAllGroupCombos() {
         List<ProductGroupEntity> groups = productGroupController.getAll();
         createComboBoxGroup.removeAllItems();
@@ -623,7 +638,10 @@ public class ProductForm extends JFrame {
         }
     }
 
-
+    /**
+     * Оновлює всі комбобокси продуктів (для оновлення, перегляду та зміни кількості).
+     * Завантажує повний список продуктів з контролера.
+     */
     private void updateAllProductCombos() {
         List<ProductEntity> products = productController.getAll();
         updateComboBoxProduct.removeAllItems();
