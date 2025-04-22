@@ -6,11 +6,24 @@ import View.ProductGroupForm;
 
 import javax.swing.*;
 
+/**
+ * Утилітний клас {@code JMenuBarUtil} створює меню для перемикання між різними формами застосунку.
+ */
 public class JMenuBarUtil {
+    /** Посилання на головну форму */
     public static MainForm mainForm;
+
+    /** Посилання на форму товарів */
     public static ProductForm productForm;
+
+    /** Посилання на форму груп товарів */
     public static ProductGroupForm productGroupForm;
 
+    /**
+     * Повертає панель меню з пунктами для відкриття різних форм.
+     *
+     * @return меню {@code JMenuBar} з пунктами "Main", "Product", "Product Group"
+     */
     public static JMenuBar getMenuBar() {
         JMenuBar jMenuBar = new JMenuBar();
 
@@ -29,6 +42,9 @@ public class JMenuBarUtil {
         return jMenuBar;
     }
 
+    /**
+     * Відкриває головну форму, приховуючи інші.
+     */
     private static void openMainForm() {
         refreshData();
         mainForm.setVisible(true);
@@ -36,6 +52,10 @@ public class JMenuBarUtil {
         productGroupForm.setVisible(false);
     }
 
+
+    /**
+     * Відкриває форму товарів, приховуючи інші.
+     */
     private static void openProductForm() {
         refreshData();
         productForm.setVisible(true);
@@ -43,6 +63,9 @@ public class JMenuBarUtil {
         mainForm.setVisible(false);
     }
 
+    /**
+     * Відкриває форму груп товарів, приховуючи інші.
+     */
     private static void openProductGroupForm() {
         refreshData();
         productGroupForm.setVisible(true);
@@ -50,6 +73,9 @@ public class JMenuBarUtil {
         mainForm.setVisible(false);
     }
 
+    /**
+     * Оновлює всі випадаючі списки у формах товарів і груп товарів.
+     */
     private static void refreshData(){
         productForm.updateAllCombos();
         productGroupForm.updateAllCombos();

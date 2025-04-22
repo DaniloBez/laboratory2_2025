@@ -80,7 +80,12 @@ public class ProductGroupJSONRepository implements IProductGroupRepository {
         }
     }
 
-
+    /**
+     * Зберігає нову групу продуктів у файл.
+     *
+     * @param productGroup новий об'єкт {@code ProductGroupEntity} для збереження
+     * @return результат операції збереження
+     */
     @Override
     public Result save(ProductGroupEntity productGroup) {
         Result result = readAllProductGroups();
@@ -91,6 +96,13 @@ public class ProductGroupJSONRepository implements IProductGroupRepository {
         return writeAllProductGroups();
     }
 
+    /**
+     * Оновлює існуючу групу продуктів за її ID.
+     *
+     * @param id           ідентифікатор групи
+     * @param productGroup нові дані для оновлення
+     * @return результат операції оновлення
+     */
     @Override
     public Result update(String id, ProductGroupEntity productGroup) {
         Result result = readAllProductGroups();
@@ -104,6 +116,12 @@ public class ProductGroupJSONRepository implements IProductGroupRepository {
         return writeAllProductGroups();
     }
 
+    /**
+     * Повертає групу продуктів за ID, якщо така існує.
+     *
+     * @param id ідентифікатор групи
+     * @return {@code Optional} з об'єктом {@code ProductGroupEntity}, або порожній, якщо не знайдено
+     */
     @Override
     public Optional<ProductGroupEntity> findById(String id) {
         Result result = readAllProductGroups();
@@ -113,6 +131,11 @@ public class ProductGroupJSONRepository implements IProductGroupRepository {
         return productGroups.stream().filter(productGroup -> productGroup.getId().equals(id)).findFirst();
     }
 
+    /**
+     * Повертає список усіх груп продуктів.
+     *
+     * @return список {@code List<ProductGroupEntity>} або {@code null}, якщо виникла помилка читання
+     */
     @Override
     public List<ProductGroupEntity> findAll() {
         Result result = readAllProductGroups();
@@ -122,6 +145,12 @@ public class ProductGroupJSONRepository implements IProductGroupRepository {
         return productGroups;
     }
 
+    /**
+     * Видаляє групу продуктів за ID.
+     *
+     * @param id ідентифікатор групи для видалення
+     * @return результат операції видалення
+     */
     @Override
     public Result deleteById(String id) {
         Result result = readAllProductGroups();

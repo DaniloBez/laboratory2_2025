@@ -94,7 +94,8 @@ public class ProductEntity {
                 "Опис: " + description + "\n" +
                 "Виробник: " + manufacturer + "\n" +
                 "Кількість на складі: " + quantityInStock + "\n" +
-                "Ціна за одиницю: " + pricePerUnit;
+                "Ціна за одиницю: " + pricePerUnit + "\n" +
+                "Загальна вартість товару на складі: " + quantityInStock * pricePerUnit;
     }
 
     /**

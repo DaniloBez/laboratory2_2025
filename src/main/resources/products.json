@@ -1,0 +1,321 @@
+[ {
+  "id" : "bbdd7926-10b5-4594-ab52-caa5fc554bdd",
+  "name" : "Борошно",
+  "description" : "Пшеничне борошно вищого ґатунку",
+  "manufacturer" : "Київхліб",
+  "quantityInStock" : 50.0,
+  "pricePerUnit" : 25.5,
+  "productGroupId" : "1c03bdd5-7de3-4c02-a866-fe8d5a18a826"
+}, {
+  "id" : "e7d296aa-da2d-43f4-ae60-d3175d326d8a",
+  "name" : "Гречка",
+  "description" : "Гречана крупа",
+  "manufacturer" : "Агротіка",
+  "quantityInStock" : 30.0,
+  "pricePerUnit" : 45.75,
+  "productGroupId" : "1c03bdd5-7de3-4c02-a866-fe8d5a18a826"
+}, {
+  "id" : "63869e22-3b2f-42ea-8764-c4440793535f",
+  "name" : "Цукор",
+  "description" : "Цукор-пісок",
+  "manufacturer" : "Цукротрест",
+  "quantityInStock" : 40.0,
+  "pricePerUnit" : 32.2,
+  "productGroupId" : "1c03bdd5-7de3-4c02-a866-fe8d5a18a826"
+}, {
+  "id" : "7595cdc7-029e-4ff4-bd78-37e56e669311",
+  "name" : "Олія",
+  "description" : "Соняшникова олія",
+  "manufacturer" : "Олійник",
+  "quantityInStock" : 25.0,
+  "pricePerUnit" : 65.0,
+  "productGroupId" : "1c03bdd5-7de3-4c02-a866-fe8d5a18a826"
+}, {
+  "id" : "5583f891-d76c-461e-9d80-43c4ab6fecbe",
+  "name" : "Молоко",
+  "description" : "Пастеризоване молоко 2,5%",
+  "manufacturer" : "Галичина",
+  "quantityInStock" : 60.0,
+  "pricePerUnit" : 28.9,
+  "productGroupId" : "1c03bdd5-7de3-4c02-a866-fe8d5a18a826"
+}, {
+  "id" : "f29c18ab-b117-4303-9343-4d2c8e8cc2fc",
+  "name" : "Яйця",
+  "description" : "Яйця курячі С0",
+  "manufacturer" : "Ясенсвіт",
+  "quantityInStock" : 100.0,
+  "pricePerUnit" : 3.5,
+  "productGroupId" : "1c03bdd5-7de3-4c02-a866-fe8d5a18a826"
+}, {
+  "id" : "7c44c337-5449-4c5b-956f-3fd758989b81",
+  "name" : "Хліб",
+  "description" : "Хліб білий нарезний",
+  "manufacturer" : "Хлібодар",
+  "quantityInStock" : 40.0,
+  "pricePerUnit" : 18.75,
+  "productGroupId" : "1c03bdd5-7de3-4c02-a866-fe8d5a18a826"
+}, {
+  "id" : "e3914af6-f530-47a9-83ad-82ac6399b4ef",
+  "name" : "Сіль",
+  "description" : "Сіль кухонна",
+  "manufacturer" : "Артемсіль",
+  "quantityInStock" : 80.0,
+  "pricePerUnit" : 8.5,
+  "productGroupId" : "1c03bdd5-7de3-4c02-a866-fe8d5a18a826"
+}, {
+  "id" : "781d08ae-f404-406c-b049-b290231a78aa",
+  "name" : "Чай",
+  "description" : "Чай чорний",
+  "manufacturer" : "Ліптон",
+  "quantityInStock" : 35.0,
+  "pricePerUnit" : 75.3,
+  "productGroupId" : "1c03bdd5-7de3-4c02-a866-fe8d5a18a826"
+}, {
+  "id" : "64c8717d-f418-45fd-b0f9-24d0e34714a5",
+  "name" : "Кава",
+  "description" : "Кава мелена",
+  "manufacturer" : "Jacobs",
+  "quantityInStock" : 20.0,
+  "pricePerUnit" : 120.0,
+  "productGroupId" : "1c03bdd5-7de3-4c02-a866-fe8d5a18a826"
+}, {
+  "id" : "a28435f3-0e07-4040-84fa-33cfe1cfbc06",
+  "name" : "Мило",
+  "description" : "Туалетне мило",
+  "manufacturer" : "Duru",
+  "quantityInStock" : 45.0,
+  "pricePerUnit" : 15.8,
+  "productGroupId" : "dd76894b-36a2-4efb-9fb8-67f5c37ba7b2"
+}, {
+  "id" : "d69f816c-492a-4ca6-b069-3ded21c6256f",
+  "name" : "Шампунь",
+  "description" : "Шампунь для волосся",
+  "manufacturer" : "Head & Shoulders",
+  "quantityInStock" : 30.0,
+  "pricePerUnit" : 85.5,
+  "productGroupId" : "dd76894b-36a2-4efb-9fb8-67f5c37ba7b2"
+}, {
+  "id" : "2995efcd-e400-4ebd-932e-74e3a751f434",
+  "name" : "Зубна паста",
+  "description" : "Паста для зубів",
+  "manufacturer" : "Colgate",
+  "quantityInStock" : 50.0,
+  "pricePerUnit" : 42.3,
+  "productGroupId" : "dd76894b-36a2-4efb-9fb8-67f5c37ba7b2"
+}, {
+  "id" : "1f29adc9-3f48-4125-b455-0206177ef1ce",
+  "name" : "Гель для душу",
+  "description" : "Освіжаючий гель",
+  "manufacturer" : "Fa",
+  "quantityInStock" : 40.0,
+  "pricePerUnit" : 65.2,
+  "productGroupId" : "dd76894b-36a2-4efb-9fb8-67f5c37ba7b2"
+}, {
+  "id" : "3d5bbda0-5a4f-4e5f-8d9c-d56aa5d35730",
+  "name" : "Рушник",
+  "description" : "Банний рушник",
+  "manufacturer" : "Текстиль",
+  "quantityInStock" : 25.0,
+  "pricePerUnit" : 120.0,
+  "productGroupId" : "dd76894b-36a2-4efb-9fb8-67f5c37ba7b2"
+}, {
+  "id" : "291d5e85-211d-4f99-9ff1-15f39f6ec806",
+  "name" : "Постільна білизна",
+  "description" : "Комплект постільної білизни",
+  "manufacturer" : "Cotton Life",
+  "quantityInStock" : 15.0,
+  "pricePerUnit" : 350.0,
+  "productGroupId" : "dd76894b-36a2-4efb-9fb8-67f5c37ba7b2"
+}, {
+  "id" : "6c6f623b-807d-4249-885b-aa6d28022113",
+  "name" : "Ганчірка",
+  "description" : "Мікрофіброва ганчірка",
+  "manufacturer" : "Clean",
+  "quantityInStock" : 60.0,
+  "pricePerUnit" : 25.5,
+  "productGroupId" : "dd76894b-36a2-4efb-9fb8-67f5c37ba7b2"
+}, {
+  "id" : "55bcca18-133d-4be9-8af1-45b4ff6a9b2a",
+  "name" : "Віник",
+  "description" : "Віник для підлоги",
+  "manufacturer" : "Domax",
+  "quantityInStock" : 20.0,
+  "pricePerUnit" : 75.0,
+  "productGroupId" : "dd76894b-36a2-4efb-9fb8-67f5c37ba7b2"
+}, {
+  "id" : "6e5dbe31-3bc3-41ed-ad2a-07063fd42885",
+  "name" : "Відбілювач",
+  "description" : "Відбілювач для білизни",
+  "manufacturer" : "Ace",
+  "quantityInStock" : 35.0,
+  "pricePerUnit" : 45.8,
+  "productGroupId" : "dd76894b-36a2-4efb-9fb8-67f5c37ba7b2"
+}, {
+  "id" : "c691c681-1197-4d30-a7e0-dbf1dd8a253c",
+  "name" : "Порошок",
+  "description" : "Пральний порошок",
+  "manufacturer" : "Tide",
+  "quantityInStock" : 30.0,
+  "pricePerUnit" : 95.0,
+  "productGroupId" : "dd76894b-36a2-4efb-9fb8-67f5c37ba7b2"
+}, {
+  "id" : "5fd70c02-33ca-4e5b-a84f-38a502258c5b",
+  "name" : "Телевізор",
+  "description" : "Smart TV 4K",
+  "manufacturer" : "Samsung",
+  "quantityInStock" : 10.0,
+  "pricePerUnit" : 15000.0,
+  "productGroupId" : "960d7564-1c36-4db1-8c7e-fede142eb3eb"
+}, {
+  "id" : "bdd29d70-f89b-47e9-a421-ce31e7a11ec2",
+  "name" : "Смартфон",
+  "description" : "Флагманський смартфон",
+  "manufacturer" : "Apple",
+  "quantityInStock" : 15.0,
+  "pricePerUnit" : 35000.0,
+  "productGroupId" : "960d7564-1c36-4db1-8c7e-fede142eb3eb"
+}, {
+  "id" : "50533c32-a6f2-40b8-9b75-ad60bbea67f3",
+  "name" : "Ноутбук",
+  "description" : "Ігровий ноутбук",
+  "manufacturer" : "Asus",
+  "quantityInStock" : 8.0,
+  "pricePerUnit" : 28000.0,
+  "productGroupId" : "960d7564-1c36-4db1-8c7e-fede142eb3eb"
+}, {
+  "id" : "f1a0d799-c24b-40b6-8252-7636f4a557c6",
+  "name" : "Навушники",
+  "description" : "Бездротові навушники",
+  "manufacturer" : "Sony",
+  "quantityInStock" : 20.0,
+  "pricePerUnit" : 2500.0,
+  "productGroupId" : "960d7564-1c36-4db1-8c7e-fede142eb3eb"
+}, {
+  "id" : "5715cd41-84a2-4ddd-8d7b-75d7f4f5f372",
+  "name" : "Пральна машина",
+  "description" : "Автоматична пральна машина",
+  "manufacturer" : "LG",
+  "quantityInStock" : 5.0,
+  "pricePerUnit" : 12000.0,
+  "productGroupId" : "960d7564-1c36-4db1-8c7e-fede142eb3eb"
+}, {
+  "id" : "70b5d208-e40b-4b29-acab-21def991ac5f",
+  "name" : "Холодильник",
+  "description" : "Двокамерний холодильник",
+  "manufacturer" : "Bosch",
+  "quantityInStock" : 7.0,
+  "pricePerUnit" : 18000.0,
+  "productGroupId" : "960d7564-1c36-4db1-8c7e-fede142eb3eb"
+}, {
+  "id" : "6218b428-7fe9-45f0-b88e-19f6cbef2d8d",
+  "name" : "Пилосос",
+  "description" : "Робот-пилосос",
+  "manufacturer" : "Xiaomi",
+  "quantityInStock" : 12.0,
+  "pricePerUnit" : 8000.0,
+  "productGroupId" : "960d7564-1c36-4db1-8c7e-fede142eb3eb"
+}, {
+  "id" : "f3a0d8c4-f505-47db-b555-b3a327e9de08",
+  "name" : "Мікрохвильовка",
+  "description" : "Мікрохвильова піч",
+  "manufacturer" : "Panasonic",
+  "quantityInStock" : 15.0,
+  "pricePerUnit" : 3500.0,
+  "productGroupId" : "960d7564-1c36-4db1-8c7e-fede142eb3eb"
+}, {
+  "id" : "5c8b6fb6-606d-4bdf-af76-8f6b493325aa",
+  "name" : "Фен",
+  "description" : "Професійний фен",
+  "manufacturer" : "Philips",
+  "quantityInStock" : 25.0,
+  "pricePerUnit" : 1200.0,
+  "productGroupId" : "960d7564-1c36-4db1-8c7e-fede142eb3eb"
+}, {
+  "id" : "df7e943a-f622-4d90-9cd3-891d4c3b4d91",
+  "name" : "Електрочайник",
+  "description" : "Швидкозаварювач",
+  "manufacturer" : "Tefal",
+  "quantityInStock" : 30.0,
+  "pricePerUnit" : 900.0,
+  "productGroupId" : "960d7564-1c36-4db1-8c7e-fede142eb3eb"
+}, {
+  "id" : "11afe479-432d-4eda-86ee-1e49ce4b81eb",
+  "name" : "Каструля",
+  "description" : "Каструля нержавіюча",
+  "manufacturer" : "Tefal",
+  "quantityInStock" : 15.0,
+  "pricePerUnit" : 850.0,
+  "productGroupId" : "475b2bfb-b1bc-43d4-8667-3b696fcd7b6a"
+}, {
+  "id" : "0463570e-ac7f-45d1-a71e-8f7968968c37",
+  "name" : "Сковорода",
+  "description" : "Антипригарна сковорода",
+  "manufacturer" : "Fissler",
+  "quantityInStock" : 20.0,
+  "pricePerUnit" : 650.0,
+  "productGroupId" : "475b2bfb-b1bc-43d4-8667-3b696fcd7b6a"
+}, {
+  "id" : "7a3b32ed-9ff2-44a2-a860-8688ca836784",
+  "name" : "Набір ножів",
+  "description" : "6 предметів",
+  "manufacturer" : "Zepter",
+  "quantityInStock" : 10.0,
+  "pricePerUnit" : 1200.0,
+  "productGroupId" : "475b2bfb-b1bc-43d4-8667-3b696fcd7b6a"
+}, {
+  "id" : "922fcc6c-c062-4566-95e3-dd26a765d99c",
+  "name" : "Термос",
+  "description" : "Термос 1л",
+  "manufacturer" : "Thermos",
+  "quantityInStock" : 25.0,
+  "pricePerUnit" : 450.0,
+  "productGroupId" : "475b2bfb-b1bc-43d4-8667-3b696fcd7b6a"
+}, {
+  "id" : "9c8ea3a6-604b-4e57-b5fb-e21473f998a3",
+  "name" : "Блендер",
+  "description" : "Погружний блендер",
+  "manufacturer" : "Braun",
+  "quantityInStock" : 12.0,
+  "pricePerUnit" : 1500.0,
+  "productGroupId" : "475b2bfb-b1bc-43d4-8667-3b696fcd7b6a"
+}, {
+  "id" : "66c054eb-9b80-42b1-b5c4-fd11f9f16ae6",
+  "name" : "Дощовик",
+  "description" : "Чоловічий дощовик",
+  "manufacturer" : "Tucano",
+  "quantityInStock" : 30.0,
+  "pricePerUnit" : 750.0,
+  "productGroupId" : "475b2bfb-b1bc-43d4-8667-3b696fcd7b6a"
+}, {
+  "id" : "f80aeeb1-2432-4c14-9133-5163f8fc4e85",
+  "name" : "Парасолька",
+  "description" : "Автоматична парасолька",
+  "manufacturer" : "Fulton",
+  "quantityInStock" : 40.0,
+  "pricePerUnit" : 350.0,
+  "productGroupId" : "475b2bfb-b1bc-43d4-8667-3b696fcd7b6a"
+}, {
+  "id" : "e304939d-7437-4ef6-b90b-638cbad4a405",
+  "name" : "Сумка",
+  "description" : "Дамська сумка",
+  "manufacturer" : "Guess",
+  "quantityInStock" : 18.0,
+  "pricePerUnit" : 1200.0,
+  "productGroupId" : "475b2bfb-b1bc-43d4-8667-3b696fcd7b6a"
+}, {
+  "id" : "3bc4ef29-07ed-4559-84b3-ed4943f01d20",
+  "name" : "Гаманець",
+  "description" : "Чоловічий гаманець",
+  "manufacturer" : "Piquadro",
+  "quantityInStock" : 22.0,
+  "pricePerUnit" : 850.0,
+  "productGroupId" : "475b2bfb-b1bc-43d4-8667-3b696fcd7b6a"
+}, {
+  "id" : "44220538-9779-4e21-bef7-cf0e9b647b2c",
+  "name" : "Рюкзак",
+  "description" : "Туристичний рюкзак",
+  "manufacturer" : "Deuter",
+  "quantityInStock" : 15.0,
+  "pricePerUnit" : 1500.0,
+  "productGroupId" : "475b2bfb-b1bc-43d4-8667-3b696fcd7b6a"
+} ]
