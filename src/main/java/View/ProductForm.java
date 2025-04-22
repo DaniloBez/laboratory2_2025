@@ -41,7 +41,7 @@ public class ProductForm extends JFrame {
     private JComboBox<ProductGroupEntity> viewComboBoxGroup;
     private JTextArea viewTextArea;
 
-    // Компоненти для вкладки "Пошук товарів"
+    // Компоненти для вкладки "Пошук за regexp товарів"
     private JTextArea viewAllTextArea;
     private JButton refreshButton;
     private JTextField filterField;
@@ -52,6 +52,9 @@ public class ProductForm extends JFrame {
     private JTextField changeCountField, currentCountField;
     private JButton changeCountButton;
 
+    // Компоненти для вкладки "Перегляд за групою"
+    private JComboBox<ProductGroupEntity> viewByGroupComboBox;
+    private JTextArea viewByGroupTextArea;
 
     /**
      * Конструктор, що ініціалізує форму, встановлює вигляд та компоненти.
@@ -235,7 +238,7 @@ public class ProductForm extends JFrame {
             }
         });
 
-        // --------------------- Вкладка "Перегляд" ---------------------
+        // --------------------- Вкладка "Перегляд товару" ---------------------
         JPanel viewPanel = new JPanel(new GridBagLayout());
         gbc = new GridBagConstraints();
         gbc.insets = new Insets(8, 8, 8, 8);
@@ -274,14 +277,14 @@ public class ProductForm extends JFrame {
         // Додаємо слухач подій для комбобоксу продуктів
         viewComboBox.addActionListener(e -> handleViewSingle());
 
-        // --------------------- Вкладка "Пошук товарів" ---------------------
+        // --------------------- Вкладка "Пошук за regexp товарів" ---------------------
         JPanel viewAllPanel = new JPanel(new BorderLayout());
 
         // Панель для вводу фільтра
         JPanel inputPanel = new JPanel(new BorderLayout());
         inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        JLabel inputLabel = new JLabel("Пошук:");
+        JLabel inputLabel = new JLabel("Введіть regexp:");
         filterField = new JTextField();
 
         JPanel inputGroup = new JPanel(new BorderLayout(5, 0));
@@ -365,15 +368,68 @@ public class ProductForm extends JFrame {
 
         changeCountButton.addActionListener(e -> handleChangeCount());
 
+        // --------------------- Вкладка "Перегляд за групою" ---------------------
+        JPanel viewByGroupPanel = new JPanel(new BorderLayout());
+
+        // Панель для вибору групи
+        JPanel groupSelectionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        groupSelectionPanel.add(new JLabel("Оберіть групу:"));
+        viewByGroupComboBox = new JComboBox<>();
+        groupSelectionPanel.add(viewByGroupComboBox);
+
+        // Текстова область для виводу товарів
+        viewByGroupTextArea = new JTextArea();
+        viewByGroupTextArea.setEditable(false);
+        JScrollPane scrollByGroup = new JScrollPane(viewByGroupTextArea);
+
+        // Додаємо слухача для комбобоксу
+        viewByGroupComboBox.addActionListener(e -> displayProductsByGroup());
+
+        // Додаємо компоненти
+        viewByGroupPanel.add(groupSelectionPanel, BorderLayout.NORTH);
+        viewByGroupPanel.add(scrollByGroup, BorderLayout.CENTER);
+
         // --------------------- Додаємо всі вкладки до таб-панелі ---------------------
         tabbedPane.addTab("Створити", createPanel);
         tabbedPane.addTab("Оновити", updatePanel);
         tabbedPane.addTab("Видалити", deletePanel);
-        tabbedPane.addTab("Перегляд", viewPanel);
-        tabbedPane.addTab("Пошук товарів", viewAllPanel);
+        tabbedPane.addTab("Перегляд товару", viewPanel);
+        tabbedPane.addTab("Перегляд за групою", viewByGroupPanel);
+        tabbedPane.addTab("Пошук за regexp", viewAllPanel);
         tabbedPane.addTab("Додавання/списання товару", changeCountPanel);
 
         getContentPane().add(tabbedPane, BorderLayout.CENTER);
+    }
+
+    /**
+     * Відображає список товарів вибраної групи з підрахунком загальної вартості.
+     * Використовує {@link ProductEntity#fullName()} для форматування інформації про кожен товар.
+     */
+    private void displayProductsByGroup() {
+        ProductGroupEntity selectedGroup = (ProductGroupEntity) viewByGroupComboBox.getSelectedItem();
+        if (selectedGroup == null) {
+            viewByGroupTextArea.setText("Оберіть групу для перегляду");
+            return;
+        }
+
+        List<ProductEntity> products = productController.findAllByGroupId(selectedGroup.getId());
+        StringBuilder sb = new StringBuilder();
+
+        if (products.isEmpty()) {
+            sb.append("У групі '").append(selectedGroup.getName()).append("' немає товарів");
+        } else {
+            sb.append("Товари групи '").append(selectedGroup.getName()).append("':\n\n");
+            double totalValue = 0;
+
+            for (ProductEntity product : products) {
+                sb.append(product.fullName()).append("\n\n");
+                totalValue += product.getQuantityInStock() * product.getPricePerUnit();
+            }
+
+            sb.append(String.format("Загальна вартість товарів у групі: %.2f", totalValue));
+        }
+
+        viewByGroupTextArea.setText(sb.toString());
     }
 
     /** Обробник зміни кількості товару */
@@ -558,6 +614,8 @@ public class ProductForm extends JFrame {
             JOptionPane.showMessageDialog(this, "Оберіть групу для видалення.", "Помилка", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
+        // Оновлюємо список продуктів для вибраної групи
         updateProductComboById(selectedGroup.getId());
 
         ProductEntity selectedProduct = (ProductEntity) deleteComboBoxProduct.getSelectedItem();
@@ -565,6 +623,7 @@ public class ProductForm extends JFrame {
             JOptionPane.showMessageDialog(this, "Оберіть продукт для видалення.", "Помилка", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
         int confirm = JOptionPane.showConfirmDialog(this,
                 "Ви впевнені, що хочете видалити продукт " + selectedProduct.getName() + "?", "Підтвердження",
                 JOptionPane.YES_NO_OPTION);
@@ -590,11 +649,7 @@ public class ProductForm extends JFrame {
     }
 
     /**
-     * Відображає відфільтрований список продуктів у текстовому полі.
-     * <p>
-     * Застосовує регулярний вираз із текстового поля як фільтр до назв продуктів.
-     * Якщо регулярний вираз некоректний або продуктів не знайдено — виводиться відповідне повідомлення.
-     * Інакше відображається список продуктів з основною інформацією про кожен.
+     * Відображає відфільтровані продукти з використанням {@link ProductEntity#fullName()}.
      */
     private void displayFilteredProducts() {
         String filterText = filterField.getText().trim();
@@ -668,11 +723,24 @@ public class ProductForm extends JFrame {
      * @param groupId ID групи продуктів для фільтрації
      */
     private void updateProductComboById(String groupId) {
+        // Зберігаємо поточний вибраний продукт
+        ProductEntity selectedProduct = (ProductEntity) deleteComboBoxProduct.getSelectedItem();
+        String selectedProductId = selectedProduct != null ? selectedProduct.getId() : null;
+
         List<ProductEntity> products = productController.findAllByGroupId(groupId);
         deleteComboBoxProduct.removeAllItems();
 
         for (ProductEntity product : products) {
             deleteComboBoxProduct.addItem(product);
+            // Відновлюємо вибраний продукт, якщо він існує в новому списку
+            if (selectedProductId != null && selectedProductId.equals(product.getId())) {
+                deleteComboBoxProduct.setSelectedItem(product);
+            }
+        }
+
+        // Якщо не вдалося відновити вибраний продукт, вибираємо перший елемент
+        if (deleteComboBoxProduct.getSelectedIndex() == -1 && deleteComboBoxProduct.getItemCount() > 0) {
+            deleteComboBoxProduct.setSelectedIndex(0);
         }
     }
 
@@ -687,6 +755,7 @@ public class ProductForm extends JFrame {
         deleteComboBoxGroup.removeAllItems();
         viewComboBoxGroup.removeAllItems();
         changeCountComboBoxGroup.removeAllItems();
+        viewByGroupComboBox.removeAllItems();
 
         for (ProductGroupEntity group : groups) {
             createComboBoxGroup.addItem(group);
@@ -694,6 +763,7 @@ public class ProductForm extends JFrame {
             deleteComboBoxGroup.addItem(group);
             viewComboBoxGroup.addItem(group);
             changeCountComboBoxGroup.addItem(group);
+            viewByGroupComboBox.addItem(group);
         }
     }
 
