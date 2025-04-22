@@ -2,6 +2,7 @@ package View;
 
 import Controller.ProductController;
 import Controller.ProductGroupController;
+import Entity.ProductEntity;
 import Entity.ProductGroupEntity;
 import Utils.JMenuBarUtil;
 import Utils.Result;
@@ -247,8 +248,10 @@ public class ProductGroupForm extends JFrame {
             JOptionPane.showMessageDialog(this, "Оберіть групу для видалення.", "Помилка", JOptionPane.ERROR_MESSAGE);
             return;
         }
+
         int confirm = JOptionPane.showConfirmDialog(this,
-                "Ви впевнені, що хочете видалити групу " + selectedGroup.getName() + "?", "Підтвердження",
+                "Ви впевнені, що хочете видалити групу " + selectedGroup.getName() + "?" +
+                        "\nБудуть видалені такі продукти: " + productController.findAllByGroupId(selectedGroup.getId()), "Підтвердження",
                 JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             productController.deleteAllProdutsByGroupId(selectedGroup.getId());
@@ -264,8 +267,13 @@ public class ProductGroupForm extends JFrame {
      */
     private void handleViewSingle() {
         ProductGroupEntity selectedGroup = (ProductGroupEntity) viewComboBox.getSelectedItem();
+
         if (selectedGroup != null) {
-            viewTextArea.setText(selectedGroup.fullName());
+            List<ProductEntity> products = productController.findAllByGroupId(selectedGroup.getId());
+            double sum = 0;
+            for (ProductEntity product : products)
+                sum += product.getQuantityInStock() * product.getPricePerUnit();
+            viewTextArea.setText(selectedGroup.fullName() + "\nЗагальна ціна продуктів: " + sum);
         } else {
             viewTextArea.setText("");
         }
@@ -278,8 +286,14 @@ public class ProductGroupForm extends JFrame {
     private void refreshAllGroups() {
         List<ProductGroupEntity> groups = groupController.getAll();
         StringBuilder sb = new StringBuilder();
-        for (ProductGroupEntity group : groups)
-            sb.append(group.fullName()).append("\n\n");
+        for (ProductGroupEntity group : groups) {
+            List<ProductEntity> products = productController.findAllByGroupId(group.getId());
+            double sum = 0;
+            for (ProductEntity product : products)
+                sum += product.getQuantityInStock() * product.getPricePerUnit();
+
+            sb.append(group.fullName()).append("\nЗагальна ціна продуктів: ").append(sum).append("\n\n");
+        }
 
         viewAllTextArea.setText(sb.toString());
     }
@@ -287,7 +301,7 @@ public class ProductGroupForm extends JFrame {
     /**
      * Оновлення випадаючих списків на основі актуальних даних груп.
      */
-    private void updateAllCombos() {
+    public void updateAllCombos() {
         List<ProductGroupEntity> groups = groupController.getAll();
         updateComboBox.removeAllItems();
         deleteComboBox.removeAllItems();

@@ -30,20 +30,28 @@ public class JMenuBarUtil {
     }
 
     private static void openMainForm() {
+        refreshData();
         mainForm.setVisible(true);
         productForm.setVisible(false);
         productGroupForm.setVisible(false);
     }
 
     private static void openProductForm() {
+        refreshData();
         productForm.setVisible(true);
         productGroupForm.setVisible(false);
         mainForm.setVisible(false);
     }
 
     private static void openProductGroupForm() {
+        refreshData();
         productGroupForm.setVisible(true);
         productForm.setVisible(false);
         mainForm.setVisible(false);
+    }
+
+    private static void refreshData(){
+        productForm.updateAllCombos();
+        productGroupForm.updateAllCombos();
     }
 }
