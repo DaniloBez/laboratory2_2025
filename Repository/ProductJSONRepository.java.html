@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductJSONRepository.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Laboratory2_2025</a> &gt; <a href="index.source.html" class="el_package">Repository</a> &gt; <span class="el_source">ProductJSONRepository.java</span></div><h1>ProductJSONRepository.java</h1><pre class="source lang-java linenums">package Repository;
+
+import Entity.ProductEntity;
+import Utils.FileHandler;
+import Utils.Result;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Репозиторій для збереження, читання та оновлення об'єктів {@link ProductEntity}
+ * у форматі JSON у файлі.
+ *
+ * Використовує клас {@link FileHandler} для роботи з файлом.
+ */
+
+<span class="nc" id="L20">public class ProductJSONRepository implements IProductRepository {</span>
+    /**
+     * Шлях до файлу з даними про продукти.
+     */
+<span class="nc" id="L24">    private final String FILE_PATH = &quot;src/main/resources/products.json&quot;;</span>
+    /**
+     * Обробник файлу для читання/запису JSON-рядків.
+     */
+<span class="nc" id="L28">    FileHandler file = new FileHandler(FILE_PATH);</span>
+    /**
+     * Список продуктів, прочитаних із файлу.
+     */
+    private List&lt;ProductEntity&gt; products;
+
+    /**
+     * Об'єкт для серіалізації/десеріалізації JSON.
+     */
+<span class="nc" id="L37">    ObjectMapper mapper = new ObjectMapper();</span>
+
+    /**
+     * Зчитує всі продукти з файлу JSON.
+     *
+     * @return Результат операції, включаючи успішність та повідомлення (JSON-рядок).
+     */
+    private Result readAllProducts(){
+<span class="nc" id="L45">        Result resultCreate = file.createFileIfNotExist();</span>
+
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        if(!resultCreate.isSuccess())</span>
+<span class="nc" id="L48">            return resultCreate;</span>
+
+<span class="nc" id="L50">        Result resultRead = file.readJSONStringFromFile();</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        if (!resultRead.isSuccess())</span>
+<span class="nc" id="L52">            return resultRead;</span>
+
+        try {
+<span class="nc bnc" id="L55" title="All 4 branches missed.">            if(resultRead.getMessage() == null || resultRead.getMessage().isEmpty())</span>
+<span class="nc" id="L56">                products = new ArrayList&lt;&gt;();</span>
+            else
+<span class="nc" id="L58">                products = new ArrayList&lt;&gt;(List.of(mapper.readValue(resultRead.getMessage(), ProductEntity[].class)));</span>
+<span class="nc" id="L59">            return resultRead;</span>
+        }
+<span class="nc" id="L61">        catch (JsonProcessingException e) {</span>
+<span class="nc" id="L62">            return new Result(false, &quot;Помилка десеріалізації: &quot;+ e.getMessage());</span>
+        }
+    }
+
+    /**
+     * Записує поточний список продуктів до файлу JSON.
+     *
+     * @return Результат операції запису.
+     */
+    private Result writeAllProducts(){
+<span class="nc" id="L72">        Result resultCreate = file.createFileIfNotExist();</span>
+
+<span class="nc bnc" id="L74" title="All 2 branches missed.">        if(!resultCreate.isSuccess())</span>
+<span class="nc" id="L75">            return resultCreate;</span>
+
+        try {
+<span class="nc" id="L78">            String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(products);</span>
+<span class="nc" id="L79">            return file.writeJSONStringInFile(json);</span>
+        }
+<span class="nc" id="L81">        catch (JsonProcessingException e) {</span>
+<span class="nc" id="L82">            return new Result(false, &quot;Помилка серіалізації: &quot;+ e.getMessage());</span>
+        }
+    }
+
+    /**
+     * Зберігає новий продукт у репозиторії.
+     *
+     * @param product Продукт для збереження.
+     * @return Результат операції.
+     */
+    @Override
+    public Result save(ProductEntity product) {
+<span class="nc" id="L94">        Result result = readAllProducts();</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        if (!result.isSuccess())</span>
+<span class="nc" id="L96">            return result;</span>
+
+<span class="nc" id="L98">        products.add(product);</span>
+<span class="nc" id="L99">        return writeAllProducts();</span>
+    }
+
+    /**
+     * Оновлює існуючий продукт за ідентифікатором.
+     *
+     * @param id      Ідентифікатор продукту.
+     * @param product Нові дані для оновлення.
+     * @return Результат операції.
+     */
+    @Override
+    public Result update(String id, ProductEntity product) {
+<span class="nc" id="L111">        Result result = readAllProducts();</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (!result.isSuccess()) return result;</span>
+
+<span class="nc" id="L114">        Optional&lt;ProductEntity&gt; existingProduct = findById(id);</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">        if (existingProduct.isEmpty())</span>
+<span class="nc" id="L116">            return new Result(false, &quot;Такого продукта не існує!&quot;);</span>
+
+<span class="nc" id="L118">        existingProduct.get().update(product);</span>
+<span class="nc" id="L119">        return writeAllProducts();</span>
+    }
+
+    /**
+     * Пошук продукту за ідентифікатором.
+     *
+     * @param id Ідентифікатор продукту.
+     * @return {@link Optional} з продуктом, якщо знайдено.
+     */
+    @Override
+    public Optional&lt;ProductEntity&gt; findById(String id) {
+<span class="nc" id="L130">        Result result = readAllProducts();</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if (!result.isSuccess())</span>
+<span class="nc" id="L132">            return Optional.empty();</span>
+
+<span class="nc" id="L134">        return products.stream().filter(product -&gt; product.getId().equals(id)).findFirst();</span>
+    }
+
+    /**
+     * Повертає список усіх продуктів.
+     *
+     * @return Список продуктів або {@code null}, якщо зчитування не вдалося.
+     */
+    @Override
+    public List&lt;ProductEntity&gt; findAll() {
+<span class="nc" id="L144">        Result result = readAllProducts();</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        if (!result.isSuccess())</span>
+<span class="nc" id="L146">            return null;</span>
+
+<span class="nc" id="L148">        return products;</span>
+    }
+
+    /**
+     * Видаляє продукт за ідентифікатором.
+     *
+     * @param id Ідентифікатор продукту для видалення.
+     * @return Результат операції.
+     */
+    @Override
+    public Result deleteById(String id) {
+<span class="nc" id="L159">        Result result = readAllProducts();</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">        if (!result.isSuccess()) return result;</span>
+
+<span class="nc" id="L162">        Optional&lt;ProductEntity&gt; product = findById(id);</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">        if (product.isEmpty())</span>
+<span class="nc" id="L164">            return new Result(false, &quot;Такого продукта не існує!&quot;);</span>
+
+<span class="nc" id="L166">        products.remove(product.get());</span>
+<span class="nc" id="L167">        return writeAllProducts();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

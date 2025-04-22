@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JMenuBarUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Laboratory2_2025</a> &gt; <a href="index.source.html" class="el_package">Utils</a> &gt; <span class="el_source">JMenuBarUtil.java</span></div><h1>JMenuBarUtil.java</h1><pre class="source lang-java linenums">package Utils;
+
+import View.MainForm;
+import View.ProductForm;
+import View.ProductGroupForm;
+
+import javax.swing.*;
+
+/**
+ * Утилітний клас {@code JMenuBarUtil} створює меню для перемикання між різними формами застосунку.
+ */
+<span class="nc" id="L12">public class JMenuBarUtil {</span>
+    /** Посилання на головну форму */
+    public static MainForm mainForm;
+
+    /** Посилання на форму товарів */
+    public static ProductForm productForm;
+
+    /** Посилання на форму груп товарів */
+    public static ProductGroupForm productGroupForm;
+
+    /**
+     * Повертає панель меню з пунктами для відкриття різних форм.
+     *
+     * @return меню {@code JMenuBar} з пунктами &quot;Main&quot;, &quot;Product&quot;, &quot;Product Group&quot;
+     */
+    public static JMenuBar getMenuBar() {
+<span class="nc" id="L28">        JMenuBar jMenuBar = new JMenuBar();</span>
+
+<span class="nc" id="L30">        JMenuItem main = new JMenuItem(&quot;Main&quot;);</span>
+<span class="nc" id="L31">        main.addActionListener(_ -&gt; openMainForm());</span>
+<span class="nc" id="L32">        jMenuBar.add(main);</span>
+
+<span class="nc" id="L34">        JMenuItem product = new JMenuItem(&quot;Product&quot;);</span>
+<span class="nc" id="L35">        product.addActionListener(_ -&gt; openProductForm());</span>
+<span class="nc" id="L36">        jMenuBar.add(product);</span>
+
+<span class="nc" id="L38">        JMenuItem productGroup = new JMenuItem(&quot;Product Group&quot;);</span>
+<span class="nc" id="L39">        productGroup.addActionListener(_ -&gt; openProductGroupForm());</span>
+<span class="nc" id="L40">        jMenuBar.add(productGroup);</span>
+
+<span class="nc" id="L42">        return jMenuBar;</span>
+    }
+
+    /**
+     * Відкриває головну форму, приховуючи інші.
+     */
+    private static void openMainForm() {
+<span class="nc" id="L49">        refreshData();</span>
+<span class="nc" id="L50">        mainForm.setVisible(true);</span>
+<span class="nc" id="L51">        productForm.setVisible(false);</span>
+<span class="nc" id="L52">        productGroupForm.setVisible(false);</span>
+<span class="nc" id="L53">    }</span>
+
+
+    /**
+     * Відкриває форму товарів, приховуючи інші.
+     */
+    private static void openProductForm() {
+<span class="nc" id="L60">        refreshData();</span>
+<span class="nc" id="L61">        productForm.setVisible(true);</span>
+<span class="nc" id="L62">        productGroupForm.setVisible(false);</span>
+<span class="nc" id="L63">        mainForm.setVisible(false);</span>
+<span class="nc" id="L64">    }</span>
+
+    /**
+     * Відкриває форму груп товарів, приховуючи інші.
+     */
+    private static void openProductGroupForm() {
+<span class="nc" id="L70">        refreshData();</span>
+<span class="nc" id="L71">        productGroupForm.setVisible(true);</span>
+<span class="nc" id="L72">        productForm.setVisible(false);</span>
+<span class="nc" id="L73">        mainForm.setVisible(false);</span>
+<span class="nc" id="L74">    }</span>
+
+    /**
+     * Оновлює всі випадаючі списки у формах товарів і груп товарів.
+     */
+    private static void refreshData(){
+<span class="nc" id="L80">        productForm.updateAllCombos();</span>
+<span class="nc" id="L81">        productGroupForm.updateAllCombos();</span>
+<span class="nc" id="L82">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

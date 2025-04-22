@@ -1,0 +1,810 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductForm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Laboratory2_2025</a> &gt; <a href="index.source.html" class="el_package">View</a> &gt; <span class="el_source">ProductForm.java</span></div><h1>ProductForm.java</h1><pre class="source lang-java linenums">package View;
+
+import Controller.ProductController;
+import Controller.ProductGroupController;
+import Entity.ProductEntity;
+import Entity.ProductGroupEntity;
+import Utils.JMenuBarUtil;
+import Utils.Result;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * Клас для створення форми управління продуктами.
+ * Має вкладки для створення, оновлення, видалення, перегляду однієї групи та перегляду всіх продуктів.
+ */
+public class ProductForm extends JFrame {
+    private final ProductController productController;
+    private final ProductGroupController productGroupController;
+
+    // Компоненти для вкладки &quot;Створити&quot;
+    private JComboBox&lt;ProductGroupEntity&gt; createComboBoxGroup;
+    private JTextField createNameField, createDescField, createManufacturerField, createQuantityInStockField, createPriceField;
+    private JButton createButton;
+
+    // Компоненти для вкладки &quot;Оновити&quot;
+    private JComboBox&lt;ProductGroupEntity&gt; updateComboBoxGroup;
+    private JComboBox&lt;ProductEntity&gt; updateComboBoxProduct;
+    private JTextField updateNameField, updateDescField, updateManufacturerField, updateQuantityInStockField, updatePriceField;
+    private JButton updateButton;
+
+    // Компоненти для вкладки &quot;Видалити&quot;
+    private JComboBox&lt;ProductEntity&gt; deleteComboBoxProduct;
+    private JComboBox&lt;ProductGroupEntity&gt; deleteComboBoxGroup;
+    private JButton deleteButton;
+
+    // Компоненти для вкладки &quot;Перегляд&quot; (інформація про об'єкт)
+    private JComboBox&lt;ProductEntity&gt; viewComboBox;
+    private JComboBox&lt;ProductGroupEntity&gt; viewComboBoxGroup;
+    private JTextArea viewTextArea;
+
+    // Компоненти для вкладки &quot;Пошук за regexp товарів&quot;
+    private JTextArea viewAllTextArea;
+    private JButton refreshButton;
+    private JTextField filterField;
+
+    // Компоненти для вкладки &quot;Додавання/списання товару&quot;
+    private JComboBox&lt;ProductEntity&gt; changeCountComboBox;
+    private JComboBox&lt;ProductGroupEntity&gt; changeCountComboBoxGroup;
+    private JTextField changeCountField, currentCountField;
+    private JButton changeCountButton;
+
+    // Компоненти для вкладки &quot;Перегляд за групою&quot;
+    private JComboBox&lt;ProductGroupEntity&gt; viewByGroupComboBox;
+    private JTextArea viewByGroupTextArea;
+
+    /**
+     * Конструктор, що ініціалізує форму, встановлює вигляд та компоненти.
+     */
+<span class="nc" id="L62">    public ProductForm() {</span>
+<span class="nc" id="L63">        productController = ProductController.getInstance();</span>
+<span class="nc" id="L64">        productGroupController = ProductGroupController.getInstance();</span>
+
+<span class="nc" id="L66">        setTitle(&quot;Форма управління продуктами товарів&quot;);</span>
+<span class="nc" id="L67">        setSize(800, 600);</span>
+<span class="nc" id="L68">        setExtendedState(JFrame.MAXIMIZED_BOTH);</span>
+<span class="nc" id="L69">        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span>
+
+        // Встановлюємо сучасний вигляд (Nimbus)
+        try {
+<span class="nc" id="L73">            UIManager.setLookAndFeel(&quot;javax.swing.plaf.nimbus.NimbusLookAndFeel&quot;);</span>
+<span class="nc" id="L74">        } catch(Exception ex) {</span>
+<span class="nc" id="L75">            System.out.println(&quot;Nimbus L&amp;F не вдалося встановити.&quot;);</span>
+<span class="nc" id="L76">        }</span>
+
+<span class="nc" id="L78">        initComponents();</span>
+<span class="nc" id="L79">        updateAllCombos();</span>
+<span class="nc" id="L80">    }</span>
+
+    /**
+     * Ініціалізує всі компоненти форми.
+     */
+    private void initComponents() {
+<span class="nc" id="L86">        JMenuBar menuBar = JMenuBarUtil.getMenuBar();</span>
+<span class="nc" id="L87">        setJMenuBar(menuBar);</span>
+
+<span class="nc" id="L89">        JTabbedPane tabbedPane = new JTabbedPane();</span>
+
+        // --------------------- Вкладка &quot;Створити&quot; ---------------------
+<span class="nc" id="L92">        JPanel createPanel = new JPanel(new GridBagLayout());</span>
+<span class="nc" id="L93">        GridBagConstraints gbc = new GridBagConstraints();</span>
+<span class="nc" id="L94">        gbc.insets = new Insets(8, 8, 8, 8);</span>
+<span class="nc" id="L95">        gbc.fill = GridBagConstraints.HORIZONTAL;</span>
+
+<span class="nc" id="L97">        gbc.gridx = 0;</span>
+<span class="nc" id="L98">        gbc.gridy = 0;</span>
+<span class="nc" id="L99">        createPanel.add(new JLabel(&quot;Оберіть групу до якої належить продукт:&quot;), gbc);</span>
+<span class="nc" id="L100">        gbc.gridx = 1;</span>
+<span class="nc" id="L101">        createComboBoxGroup = new JComboBox&lt;&gt;();</span>
+<span class="nc" id="L102">        createPanel.add(createComboBoxGroup, gbc);</span>
+
+<span class="nc" id="L104">        gbc.gridx = 0;</span>
+<span class="nc" id="L105">        gbc.gridy = 1;</span>
+<span class="nc" id="L106">        createPanel.add(new JLabel(&quot;Назва продукту:&quot;), gbc);</span>
+<span class="nc" id="L107">        gbc.gridx = 1;</span>
+<span class="nc" id="L108">        createNameField = new JTextField(20);</span>
+<span class="nc" id="L109">        createPanel.add(createNameField, gbc);</span>
+
+<span class="nc" id="L111">        gbc.gridx = 0;</span>
+<span class="nc" id="L112">        gbc.gridy = 2;</span>
+<span class="nc" id="L113">        createPanel.add(new JLabel(&quot;Опис продукту:&quot;), gbc);</span>
+<span class="nc" id="L114">        gbc.gridx = 1;</span>
+<span class="nc" id="L115">        createDescField = new JTextField(20);</span>
+<span class="nc" id="L116">        createPanel.add(createDescField, gbc);</span>
+
+<span class="nc" id="L118">        gbc.gridx = 0;</span>
+<span class="nc" id="L119">        gbc.gridy = 3;</span>
+<span class="nc" id="L120">        createPanel.add(new JLabel(&quot;Мануфактура:&quot;), gbc);</span>
+<span class="nc" id="L121">        gbc.gridx = 1;</span>
+<span class="nc" id="L122">        createManufacturerField = new JTextField(20);</span>
+<span class="nc" id="L123">        createPanel.add(createManufacturerField, gbc);</span>
+
+<span class="nc" id="L125">        gbc.gridx = 0;</span>
+<span class="nc" id="L126">        gbc.gridy = 4;</span>
+<span class="nc" id="L127">        createPanel.add(new JLabel(&quot;Кількість на складі:&quot;), gbc);</span>
+<span class="nc" id="L128">        gbc.gridx = 1;</span>
+<span class="nc" id="L129">        createQuantityInStockField = new JTextField(20);</span>
+<span class="nc" id="L130">        createPanel.add(createQuantityInStockField, gbc);</span>
+
+<span class="nc" id="L132">        gbc.gridx = 0;</span>
+<span class="nc" id="L133">        gbc.gridy = 5;</span>
+<span class="nc" id="L134">        createPanel.add(new JLabel(&quot;Ціна за одиницю:&quot;), gbc);</span>
+<span class="nc" id="L135">        gbc.gridx = 1;</span>
+<span class="nc" id="L136">        createPriceField = new JTextField(20);</span>
+<span class="nc" id="L137">        createPanel.add(createPriceField, gbc);</span>
+
+<span class="nc" id="L139">        gbc.gridx = 1;</span>
+<span class="nc" id="L140">        gbc.gridy = 6;</span>
+<span class="nc" id="L141">        createButton = new JButton(&quot;Створити продукт&quot;);</span>
+<span class="nc" id="L142">        createPanel.add(createButton, gbc);</span>
+
+<span class="nc" id="L144">        createButton.addActionListener(e -&gt; handleCreate());</span>
+
+        // --------------------- Вкладка &quot;Оновити&quot; ---------------------
+<span class="nc" id="L147">        JPanel updatePanel = new JPanel(new GridBagLayout());</span>
+<span class="nc" id="L148">        gbc = new GridBagConstraints();</span>
+<span class="nc" id="L149">        gbc.insets = new Insets(8, 8, 8, 8);</span>
+<span class="nc" id="L150">        gbc.fill = GridBagConstraints.HORIZONTAL;</span>
+
+<span class="nc" id="L152">        gbc.gridx = 0;</span>
+<span class="nc" id="L153">        gbc.gridy = 0;</span>
+<span class="nc" id="L154">        updatePanel.add(new JLabel(&quot;Оберіть продукт для оновлення:&quot;), gbc);</span>
+<span class="nc" id="L155">        gbc.gridx = 1;</span>
+<span class="nc" id="L156">        updateComboBoxProduct = new JComboBox&lt;&gt;();</span>
+<span class="nc" id="L157">        updatePanel.add(updateComboBoxProduct, gbc);</span>
+
+<span class="nc" id="L159">        gbc.gridx = 0;</span>
+<span class="nc" id="L160">        gbc.gridy = 1;</span>
+<span class="nc" id="L161">        updatePanel.add(new JLabel(&quot;Нова назва:&quot;), gbc);</span>
+<span class="nc" id="L162">        gbc.gridx = 1;</span>
+<span class="nc" id="L163">        updateNameField = new JTextField(20);</span>
+<span class="nc" id="L164">        updatePanel.add(updateNameField, gbc);</span>
+
+<span class="nc" id="L166">        gbc.gridx = 0;</span>
+<span class="nc" id="L167">        gbc.gridy = 2;</span>
+<span class="nc" id="L168">        updatePanel.add(new JLabel(&quot;Новий опис:&quot;), gbc);</span>
+<span class="nc" id="L169">        gbc.gridx = 1;</span>
+<span class="nc" id="L170">        updateDescField = new JTextField(20);</span>
+<span class="nc" id="L171">        updatePanel.add(updateDescField, gbc);</span>
+
+<span class="nc" id="L173">        gbc.gridx = 0;</span>
+<span class="nc" id="L174">        gbc.gridy = 3;</span>
+<span class="nc" id="L175">        updatePanel.add(new JLabel(&quot;Нова мануфактура:&quot;), gbc);</span>
+<span class="nc" id="L176">        gbc.gridx = 1;</span>
+<span class="nc" id="L177">        updateManufacturerField = new JTextField(20);</span>
+<span class="nc" id="L178">        updatePanel.add(updateManufacturerField, gbc);</span>
+
+<span class="nc" id="L180">        gbc.gridx = 0;</span>
+<span class="nc" id="L181">        gbc.gridy = 4;</span>
+<span class="nc" id="L182">        updatePanel.add(new JLabel(&quot;Нова кількість на складі:&quot;), gbc);</span>
+<span class="nc" id="L183">        gbc.gridx = 1;</span>
+<span class="nc" id="L184">        updateQuantityInStockField = new JTextField(20);</span>
+<span class="nc" id="L185">        updatePanel.add(updateQuantityInStockField, gbc);</span>
+
+<span class="nc" id="L187">        gbc.gridx = 0;</span>
+<span class="nc" id="L188">        gbc.gridy = 5;</span>
+<span class="nc" id="L189">        updatePanel.add(new JLabel(&quot;Нова ціна за одиницю:&quot;), gbc);</span>
+<span class="nc" id="L190">        gbc.gridx = 1;</span>
+<span class="nc" id="L191">        updatePriceField = new JTextField(20);</span>
+<span class="nc" id="L192">        updatePanel.add(updatePriceField, gbc);</span>
+
+<span class="nc" id="L194">        gbc.gridx = 0;</span>
+<span class="nc" id="L195">        gbc.gridy = 6;</span>
+<span class="nc" id="L196">        updatePanel.add(new JLabel(&quot;Оберіть нову групу для продукта:&quot;), gbc);</span>
+<span class="nc" id="L197">        gbc.gridx = 1;</span>
+<span class="nc" id="L198">        updateComboBoxGroup = new JComboBox&lt;&gt;();</span>
+<span class="nc" id="L199">        updatePanel.add(updateComboBoxGroup, gbc);</span>
+
+<span class="nc" id="L201">        gbc.gridx = 1;</span>
+<span class="nc" id="L202">        gbc.gridy = 7;</span>
+<span class="nc" id="L203">        updateButton = new JButton(&quot;Оновити продукт&quot;);</span>
+<span class="nc" id="L204">        updatePanel.add(updateButton, gbc);</span>
+
+<span class="nc" id="L206">        updateButton.addActionListener(e -&gt; handleUpdate());</span>
+
+        // --------------------- Вкладка &quot;Видалити&quot; ---------------------
+<span class="nc" id="L209">        JPanel deletePanel = new JPanel(new GridBagLayout());</span>
+<span class="nc" id="L210">        gbc = new GridBagConstraints();</span>
+<span class="nc" id="L211">        gbc.insets = new Insets(8, 8, 8, 8);</span>
+<span class="nc" id="L212">        gbc.fill = GridBagConstraints.HORIZONTAL;</span>
+
+<span class="nc" id="L214">        gbc.gridx = 0;</span>
+<span class="nc" id="L215">        gbc.gridy = 0;</span>
+<span class="nc" id="L216">        deletePanel.add(new JLabel(&quot;Оберіть групу до якої належить:&quot;), gbc);</span>
+<span class="nc" id="L217">        gbc.gridx = 1;</span>
+<span class="nc" id="L218">        deleteComboBoxGroup = new JComboBox&lt;&gt;();</span>
+<span class="nc" id="L219">        deletePanel.add(deleteComboBoxGroup, gbc);</span>
+
+<span class="nc" id="L221">        gbc.gridx = 0;</span>
+<span class="nc" id="L222">        gbc.gridy = 1;</span>
+<span class="nc" id="L223">        deletePanel.add(new JLabel(&quot;Оберіть продукт для видалення:&quot;), gbc);</span>
+<span class="nc" id="L224">        gbc.gridx = 1;</span>
+<span class="nc" id="L225">        deleteComboBoxProduct = new JComboBox&lt;&gt;();</span>
+<span class="nc" id="L226">        deletePanel.add(deleteComboBoxProduct, gbc);</span>
+
+<span class="nc" id="L228">        gbc.gridx = 1;</span>
+<span class="nc" id="L229">        gbc.gridy = 2;</span>
+<span class="nc" id="L230">        deleteButton = new JButton(&quot;Видалити продукт&quot;);</span>
+<span class="nc" id="L231">        deletePanel.add(deleteButton, gbc);</span>
+
+<span class="nc" id="L233">        deleteButton.addActionListener(e -&gt; handleDelete());</span>
+<span class="nc" id="L234">        deleteComboBoxGroup.addActionListener(e -&gt; {</span>
+<span class="nc" id="L235">            ProductGroupEntity selectedGroup = (ProductGroupEntity) deleteComboBoxGroup.getSelectedItem();</span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">            if (selectedGroup != null) {</span>
+<span class="nc" id="L237">                updateProductComboById(selectedGroup.getId());</span>
+            }
+<span class="nc" id="L239">        });</span>
+
+        // --------------------- Вкладка &quot;Перегляд товару&quot; ---------------------
+<span class="nc" id="L242">        JPanel viewPanel = new JPanel(new GridBagLayout());</span>
+<span class="nc" id="L243">        gbc = new GridBagConstraints();</span>
+<span class="nc" id="L244">        gbc.insets = new Insets(8, 8, 8, 8);</span>
+<span class="nc" id="L245">        gbc.fill = GridBagConstraints.HORIZONTAL;</span>
+
+<span class="nc" id="L247">        gbc.gridx = 0;</span>
+<span class="nc" id="L248">        gbc.gridy = 0;</span>
+<span class="nc" id="L249">        viewPanel.add(new JLabel(&quot;Оберіть групу:&quot;), gbc);</span>
+<span class="nc" id="L250">        gbc.gridx = 1;</span>
+<span class="nc" id="L251">        viewComboBoxGroup = new JComboBox&lt;&gt;();</span>
+<span class="nc" id="L252">        viewPanel.add(viewComboBoxGroup, gbc);</span>
+
+<span class="nc" id="L254">        gbc.gridx = 0;</span>
+<span class="nc" id="L255">        gbc.gridy = 1;</span>
+<span class="nc" id="L256">        viewPanel.add(new JLabel(&quot;Оберіть продукт для перегляду:&quot;), gbc);</span>
+<span class="nc" id="L257">        gbc.gridx = 1;</span>
+<span class="nc" id="L258">        viewComboBox = new JComboBox&lt;&gt;();</span>
+<span class="nc" id="L259">        viewPanel.add(viewComboBox, gbc);</span>
+
+<span class="nc" id="L261">        gbc.gridx = 0;</span>
+<span class="nc" id="L262">        gbc.gridy = 2;</span>
+<span class="nc" id="L263">        gbc.gridwidth = 2;</span>
+<span class="nc" id="L264">        viewTextArea = new JTextArea(7, 30);</span>
+<span class="nc" id="L265">        viewTextArea.setEditable(false);</span>
+<span class="nc" id="L266">        JScrollPane scrollView = new JScrollPane(viewTextArea);</span>
+<span class="nc" id="L267">        viewPanel.add(scrollView, gbc);</span>
+
+        // Додаємо слухач подій для комбобоксу груп
+<span class="nc" id="L270">        viewComboBoxGroup.addActionListener(e -&gt; {</span>
+<span class="nc" id="L271">            ProductGroupEntity selectedGroup = (ProductGroupEntity) viewComboBoxGroup.getSelectedItem();</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">            if (selectedGroup != null) {</span>
+<span class="nc" id="L273">                updateViewComboByGroupId(selectedGroup.getId());</span>
+            }
+<span class="nc" id="L275">        });</span>
+
+        // Додаємо слухач подій для комбобоксу продуктів
+<span class="nc" id="L278">        viewComboBox.addActionListener(e -&gt; handleViewSingle());</span>
+
+        // --------------------- Вкладка &quot;Пошук за regexp товарів&quot; ---------------------
+<span class="nc" id="L281">        JPanel viewAllPanel = new JPanel(new BorderLayout());</span>
+
+        // Панель для вводу фільтра
+<span class="nc" id="L284">        JPanel inputPanel = new JPanel(new BorderLayout());</span>
+<span class="nc" id="L285">        inputPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));</span>
+
+<span class="nc" id="L287">        JLabel inputLabel = new JLabel(&quot;Введіть regexp:&quot;);</span>
+<span class="nc" id="L288">        filterField = new JTextField();</span>
+
+<span class="nc" id="L290">        JPanel inputGroup = new JPanel(new BorderLayout(5, 0));</span>
+<span class="nc" id="L291">        inputGroup.add(inputLabel, BorderLayout.WEST);</span>
+<span class="nc" id="L292">        inputGroup.add(filterField, BorderLayout.CENTER);</span>
+
+<span class="nc" id="L294">        inputPanel.add(inputGroup, BorderLayout.NORTH);</span>
+
+        // Текстова область
+<span class="nc" id="L297">        viewAllTextArea = new JTextArea();</span>
+<span class="nc" id="L298">        viewAllTextArea.setEditable(false);</span>
+<span class="nc" id="L299">        JScrollPane scrollAll = new JScrollPane(viewAllTextArea);</span>
+
+        // Кнопка оновлення
+<span class="nc" id="L302">        refreshButton = new JButton(&quot;Оновити список продуктів&quot;);</span>
+<span class="nc" id="L303">        refreshButton.addActionListener(e -&gt; {</span>
+<span class="nc" id="L304">            displayFilteredProducts();</span>
+<span class="nc" id="L305">        });</span>
+<span class="nc" id="L306">        filterField.addActionListener(e -&gt; displayFilteredProducts());</span>
+
+        // Додаємо компоненти
+<span class="nc" id="L309">        viewAllPanel.add(inputPanel, BorderLayout.NORTH);</span>
+<span class="nc" id="L310">        viewAllPanel.add(scrollAll, BorderLayout.CENTER);</span>
+<span class="nc" id="L311">        viewAllPanel.add(refreshButton, BorderLayout.SOUTH);</span>
+
+    // --------------------- Вкладка &quot;Додавання/списання товару&quot; ---------------------
+<span class="nc" id="L314">        JPanel changeCountPanel = new JPanel(new GridBagLayout());</span>
+<span class="nc" id="L315">        gbc = new GridBagConstraints();</span>
+<span class="nc" id="L316">        gbc.insets = new Insets(8, 8, 8, 8);</span>
+<span class="nc" id="L317">        gbc.fill = GridBagConstraints.HORIZONTAL;</span>
+
+<span class="nc" id="L319">        gbc.gridx = 0;</span>
+<span class="nc" id="L320">        gbc.gridy = 0;</span>
+<span class="nc" id="L321">        changeCountPanel.add(new JLabel(&quot;Оберіть групу:&quot;), gbc);</span>
+<span class="nc" id="L322">        gbc.gridx = 1;</span>
+<span class="nc" id="L323">        changeCountComboBoxGroup = new JComboBox&lt;&gt;();</span>
+<span class="nc" id="L324">        changeCountPanel.add(changeCountComboBoxGroup, gbc);</span>
+
+<span class="nc" id="L326">        gbc.gridx = 0;</span>
+<span class="nc" id="L327">        gbc.gridy = 1;</span>
+<span class="nc" id="L328">        changeCountPanel.add(new JLabel(&quot;Оберіть продукт:&quot;), gbc);</span>
+<span class="nc" id="L329">        gbc.gridx = 1;</span>
+<span class="nc" id="L330">        changeCountComboBox = new JComboBox&lt;&gt;();</span>
+<span class="nc" id="L331">        changeCountPanel.add(changeCountComboBox, gbc);</span>
+
+<span class="nc" id="L333">        gbc.gridx = 0;</span>
+<span class="nc" id="L334">        gbc.gridy = 2;</span>
+<span class="nc" id="L335">        changeCountPanel.add(new JLabel(&quot;Поточна кількість товару:&quot;), gbc);</span>
+<span class="nc" id="L336">        gbc.gridx = 1;</span>
+<span class="nc" id="L337">        currentCountField = new JTextField(20);</span>
+<span class="nc" id="L338">        currentCountField.setEditable(false);</span>
+<span class="nc" id="L339">        changeCountPanel.add(currentCountField, gbc);</span>
+
+<span class="nc" id="L341">        gbc.gridx = 0;</span>
+<span class="nc" id="L342">        gbc.gridy = 3;</span>
+<span class="nc" id="L343">        changeCountPanel.add(new JLabel(&quot;Зміна кількості (введіть +або- число):&quot;), gbc);</span>
+<span class="nc" id="L344">        gbc.gridx = 1;</span>
+<span class="nc" id="L345">        changeCountField = new JTextField(20);</span>
+<span class="nc" id="L346">        changeCountPanel.add(changeCountField, gbc);</span>
+
+<span class="nc" id="L348">        gbc.gridx = 1;</span>
+<span class="nc" id="L349">        gbc.gridy = 4;</span>
+<span class="nc" id="L350">        changeCountButton = new JButton(&quot;Змінити кількість&quot;);</span>
+<span class="nc" id="L351">        changeCountPanel.add(changeCountButton, gbc);</span>
+
+<span class="nc" id="L353">        changeCountComboBoxGroup.addActionListener(e -&gt; {</span>
+<span class="nc" id="L354">            ProductGroupEntity selectedGroup = (ProductGroupEntity) changeCountComboBoxGroup.getSelectedItem();</span>
+<span class="nc bnc" id="L355" title="All 2 branches missed.">            if (selectedGroup != null) {</span>
+<span class="nc" id="L356">                updateChangeCountComboByGroupId(selectedGroup.getId());</span>
+            }
+<span class="nc" id="L358">        });</span>
+
+<span class="nc" id="L360">        changeCountComboBox.addActionListener(e -&gt; {</span>
+<span class="nc" id="L361">            ProductEntity selectedProduct = (ProductEntity) changeCountComboBox.getSelectedItem();</span>
+<span class="nc bnc" id="L362" title="All 2 branches missed.">            if (selectedProduct != null) {</span>
+<span class="nc" id="L363">                currentCountField.setText(String.valueOf(selectedProduct.getQuantityInStock()));</span>
+            } else {
+<span class="nc" id="L365">                currentCountField.setText(&quot;&quot;);</span>
+            }
+<span class="nc" id="L367">        });</span>
+
+<span class="nc" id="L369">        changeCountButton.addActionListener(e -&gt; handleChangeCount());</span>
+
+        // --------------------- Вкладка &quot;Перегляд за групою&quot; ---------------------
+<span class="nc" id="L372">        JPanel viewByGroupPanel = new JPanel(new BorderLayout());</span>
+
+        // Панель для вибору групи
+<span class="nc" id="L375">        JPanel groupSelectionPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));</span>
+<span class="nc" id="L376">        groupSelectionPanel.add(new JLabel(&quot;Оберіть групу:&quot;));</span>
+<span class="nc" id="L377">        viewByGroupComboBox = new JComboBox&lt;&gt;();</span>
+<span class="nc" id="L378">        groupSelectionPanel.add(viewByGroupComboBox);</span>
+
+        // Текстова область для виводу товарів
+<span class="nc" id="L381">        viewByGroupTextArea = new JTextArea();</span>
+<span class="nc" id="L382">        viewByGroupTextArea.setEditable(false);</span>
+<span class="nc" id="L383">        JScrollPane scrollByGroup = new JScrollPane(viewByGroupTextArea);</span>
+
+        // Додаємо слухача для комбобоксу
+<span class="nc" id="L386">        viewByGroupComboBox.addActionListener(e -&gt; displayProductsByGroup());</span>
+
+        // Додаємо компоненти
+<span class="nc" id="L389">        viewByGroupPanel.add(groupSelectionPanel, BorderLayout.NORTH);</span>
+<span class="nc" id="L390">        viewByGroupPanel.add(scrollByGroup, BorderLayout.CENTER);</span>
+
+        // --------------------- Додаємо всі вкладки до таб-панелі ---------------------
+<span class="nc" id="L393">        tabbedPane.addTab(&quot;Створити&quot;, createPanel);</span>
+<span class="nc" id="L394">        tabbedPane.addTab(&quot;Оновити&quot;, updatePanel);</span>
+<span class="nc" id="L395">        tabbedPane.addTab(&quot;Видалити&quot;, deletePanel);</span>
+<span class="nc" id="L396">        tabbedPane.addTab(&quot;Перегляд товару&quot;, viewPanel);</span>
+<span class="nc" id="L397">        tabbedPane.addTab(&quot;Перегляд за групою&quot;, viewByGroupPanel);</span>
+<span class="nc" id="L398">        tabbedPane.addTab(&quot;Пошук за regexp&quot;, viewAllPanel);</span>
+<span class="nc" id="L399">        tabbedPane.addTab(&quot;Додавання/списання товару&quot;, changeCountPanel);</span>
+
+<span class="nc" id="L401">        getContentPane().add(tabbedPane, BorderLayout.CENTER);</span>
+<span class="nc" id="L402">    }</span>
+
+    /**
+     * Відображає список товарів вибраної групи з підрахунком загальної вартості.
+     * Використовує {@link ProductEntity#fullName()} для форматування інформації про кожен товар.
+     */
+    private void displayProductsByGroup() {
+<span class="nc" id="L409">        ProductGroupEntity selectedGroup = (ProductGroupEntity) viewByGroupComboBox.getSelectedItem();</span>
+<span class="nc bnc" id="L410" title="All 2 branches missed.">        if (selectedGroup == null) {</span>
+<span class="nc" id="L411">            viewByGroupTextArea.setText(&quot;Оберіть групу для перегляду&quot;);</span>
+<span class="nc" id="L412">            return;</span>
+        }
+
+<span class="nc" id="L415">        List&lt;ProductEntity&gt; products = productController.findAllByGroupId(selectedGroup.getId());</span>
+<span class="nc" id="L416">        StringBuilder sb = new StringBuilder();</span>
+
+<span class="nc bnc" id="L418" title="All 2 branches missed.">        if (products.isEmpty()) {</span>
+<span class="nc" id="L419">            sb.append(&quot;У групі '&quot;).append(selectedGroup.getName()).append(&quot;' немає товарів&quot;);</span>
+        } else {
+<span class="nc" id="L421">            sb.append(&quot;Товари групи '&quot;).append(selectedGroup.getName()).append(&quot;':\n\n&quot;);</span>
+<span class="nc" id="L422">            double totalValue = 0;</span>
+
+<span class="nc bnc" id="L424" title="All 2 branches missed.">            for (ProductEntity product : products) {</span>
+<span class="nc" id="L425">                sb.append(product.fullName()).append(&quot;\n\n&quot;);</span>
+<span class="nc" id="L426">                totalValue += product.getQuantityInStock() * product.getPricePerUnit();</span>
+<span class="nc" id="L427">            }</span>
+
+<span class="nc" id="L429">            sb.append(String.format(&quot;Загальна вартість товарів у групі: %.2f&quot;, totalValue));</span>
+        }
+
+<span class="nc" id="L432">        viewByGroupTextArea.setText(sb.toString());</span>
+<span class="nc" id="L433">    }</span>
+
+    /** Обробник зміни кількості товару */
+    private void handleChangeCount() {
+<span class="nc" id="L437">        ProductEntity selectedProduct = (ProductEntity) changeCountComboBox.getSelectedItem();</span>
+<span class="nc bnc" id="L438" title="All 2 branches missed.">        if (selectedProduct == null) {</span>
+<span class="nc" id="L439">            JOptionPane.showMessageDialog(this, &quot;Будь ласка, оберіть продукт&quot;);</span>
+<span class="nc" id="L440">            return;</span>
+        }
+
+        try {
+<span class="nc" id="L444">            double quantityChange = Double.parseDouble(changeCountField.getText());</span>
+<span class="nc" id="L445">            Result result = productController.changeCountOfProduct(</span>
+<span class="nc" id="L446">                    selectedProduct.getId(),</span>
+                    quantityChange
+            );
+
+<span class="nc bnc" id="L450" title="All 2 branches missed.">            if (result.isSuccess()) {</span>
+<span class="nc" id="L451">                JOptionPane.showMessageDialog(this, &quot;Кількість товару успішно змінена&quot;);</span>
+                // Оновлюємо поточне значення
+<span class="nc" id="L453">                currentCountField.setText(String.valueOf(</span>
+<span class="nc" id="L454">                        selectedProduct.getQuantityInStock() + quantityChange</span>
+                ));
+                // Оновлюємо всі комбобокси
+<span class="nc" id="L457">                updateAllCombos();</span>
+<span class="nc" id="L458">                changeCountField.setText(&quot;&quot;);</span>
+            } else {
+<span class="nc" id="L460">                JOptionPane.showMessageDialog(this, &quot;Помилка: &quot; + result.getMessage());</span>
+            }
+<span class="nc" id="L462">        } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L463">            JOptionPane.showMessageDialog(this, &quot;Будь ласка, введіть коректне число&quot;);</span>
+<span class="nc" id="L464">        }</span>
+<span class="nc" id="L465">    }</span>
+
+    /**
+     * Обробляє створення нового продукту.
+     */
+    private void handleCreate() {
+<span class="nc" id="L471">        ProductGroupEntity selectedGroup = (ProductGroupEntity) updateComboBoxGroup.getSelectedItem();</span>
+<span class="nc bnc" id="L472" title="All 2 branches missed.">        if (selectedGroup == null) return;</span>
+
+<span class="nc" id="L474">        String name = createNameField.getText().trim();</span>
+<span class="nc" id="L475">        String description = createDescField.getText().trim();</span>
+<span class="nc" id="L476">        String manufacturer = createManufacturerField.getText().trim();</span>
+<span class="nc" id="L477">        String quantityText = createQuantityInStockField.getText().trim();</span>
+<span class="nc" id="L478">        String priceText = createPriceField.getText().trim();</span>
+
+        // Валідація обов'язкових текстових полів
+<span class="nc bnc" id="L481" title="All 2 branches missed.">        if (!validateRequiredTextFields(name, description, manufacturer)) {</span>
+<span class="nc" id="L482">            return;</span>
+        }
+
+        // Валідація кількості
+<span class="nc" id="L486">        Double quantityInStock = validatePositiveNumber(quantityText, &quot;Кількість товару повинна бути більше 0.&quot;);</span>
+<span class="nc bnc" id="L487" title="All 2 branches missed.">        if (quantityInStock == null) return;</span>
+
+        // Валідація ціни
+<span class="nc" id="L490">        Double price = validatePositiveNumber(priceText, &quot;Ціна товару повинна бути більше 0.&quot;);</span>
+<span class="nc bnc" id="L491" title="All 2 branches missed.">        if (price == null) return;</span>
+
+<span class="nc" id="L493">        ProductEntity newProduct = new ProductEntity(name, description, manufacturer,</span>
+<span class="nc" id="L494">                quantityInStock, price, selectedGroup.getId());</span>
+<span class="nc" id="L495">        Result result = productController.create(newProduct);</span>
+<span class="nc" id="L496">        JOptionPane.showMessageDialog(this, result.getMessage());</span>
+<span class="nc" id="L497">        clearCreateFields();</span>
+<span class="nc" id="L498">        updateAllCombos();</span>
+<span class="nc" id="L499">    }</span>
+
+
+
+    /**
+     * Обробляє оновлення вибраного продукту.
+     *
+     * &lt;p&gt;Якщо група залишається незмінною - всі поля обов'язкові.
+     * При зміні групи - інші поля стають необов'язковими (можна лише перенести продукт в іншу групу).&lt;/p&gt;
+     *
+     * &lt;p&gt;Ціна та кількість товару повинні бути більше 0.&lt;/p&gt;
+     */
+    private void handleUpdate() {
+<span class="nc" id="L512">        ProductGroupEntity selectedGroup = (ProductGroupEntity) updateComboBoxGroup.getSelectedItem();</span>
+<span class="nc" id="L513">        ProductEntity selectedProduct = (ProductEntity) updateComboBoxProduct.getSelectedItem();</span>
+<span class="nc bnc" id="L514" title="All 4 branches missed.">        if (selectedGroup == null || selectedProduct == null) {</span>
+<span class="nc" id="L515">            JOptionPane.showMessageDialog(this, &quot;Оберіть продукт для оновлення.&quot;, &quot;Помилка&quot;, JOptionPane.ERROR_MESSAGE);</span>
+<span class="nc" id="L516">            return;</span>
+        }
+
+<span class="nc" id="L519">        String newName = updateNameField.getText().trim();</span>
+<span class="nc" id="L520">        String newDesc = updateDescField.getText().trim();</span>
+<span class="nc" id="L521">        String newManufacturer = updateManufacturerField.getText().trim();</span>
+<span class="nc" id="L522">        String quantityText = updateQuantityInStockField.getText().trim();</span>
+<span class="nc" id="L523">        String priceText = updatePriceField.getText().trim();</span>
+
+<span class="nc bnc" id="L525" title="All 2 branches missed.">        boolean groupChanged = !Objects.equals(selectedGroup.getId(), selectedProduct.getProductGroupId());</span>
+
+<span class="nc bnc" id="L527" title="All 4 branches missed.">        if (!groupChanged &amp;&amp; !validateRequiredTextFields(newName, newDesc, newManufacturer, quantityText, priceText)) {</span>
+<span class="nc" id="L528">            return;</span>
+        }
+
+<span class="nc" id="L531">        Double newQuantityInStock = validateQuantity(quantityText, groupChanged, selectedProduct);</span>
+<span class="nc bnc" id="L532" title="All 2 branches missed.">        if (newQuantityInStock == null) return;</span>
+
+<span class="nc" id="L534">        Double newPrice = validatePrice(priceText, groupChanged, selectedProduct);</span>
+<span class="nc bnc" id="L535" title="All 2 branches missed.">        if (newPrice == null) return;</span>
+
+<span class="nc bnc" id="L537" title="All 4 branches missed.">        String finalName = newName.isEmpty() &amp;&amp; groupChanged ? selectedProduct.getName() : newName;</span>
+<span class="nc bnc" id="L538" title="All 4 branches missed.">        String finalDesc = newDesc.isEmpty() &amp;&amp; groupChanged ? selectedProduct.getDescription() : newDesc;</span>
+<span class="nc bnc" id="L539" title="All 4 branches missed.">        String finalManufacturer = newManufacturer.isEmpty() &amp;&amp; groupChanged ?</span>
+<span class="nc" id="L540">                selectedProduct.getManufacturer() : newManufacturer;</span>
+
+<span class="nc" id="L542">        ProductEntity updatedProduct = new ProductEntity(</span>
+                finalName, finalDesc, finalManufacturer,
+<span class="nc" id="L544">                newQuantityInStock, newPrice, selectedGroup.getId()</span>
+        );
+
+<span class="nc" id="L547">        Result result = productController.update(selectedProduct.getId(), updatedProduct);</span>
+<span class="nc" id="L548">        JOptionPane.showMessageDialog(this, result.getMessage());</span>
+<span class="nc" id="L549">        clearUpdateFields();</span>
+<span class="nc" id="L550">        updateAllCombos();</span>
+<span class="nc" id="L551">    }</span>
+
+    /**
+     * Валідує кількість товару. Якщо поле порожнє при зміні групи - повертає поточне значення.
+     */
+    private Double validateQuantity(String quantityText, boolean groupChanged, ProductEntity product) {
+<span class="nc bnc" id="L557" title="All 4 branches missed.">        if (quantityText.isEmpty() &amp;&amp; groupChanged) {</span>
+<span class="nc" id="L558">            return product.getQuantityInStock();</span>
+        }
+<span class="nc" id="L560">        return validatePositiveNumber(quantityText, &quot;Кількість товару повинна бути більше 0.&quot;);</span>
+    }
+
+    /**
+     * Валідує ціну товару. Якщо поле порожнє при зміні групи - повертає поточну ціну.
+     */
+    private Double validatePrice(String priceText, boolean groupChanged, ProductEntity product) {
+<span class="nc bnc" id="L567" title="All 4 branches missed.">        if (priceText.isEmpty() &amp;&amp; groupChanged) {</span>
+<span class="nc" id="L568">            return product.getPricePerUnit();</span>
+        }
+<span class="nc" id="L570">        return validatePositiveNumber(priceText, &quot;Ціна товару повинна бути більше 0.&quot;);</span>
+    }
+
+    /**
+     * Валідує обов'язкові текстові поля.
+     */
+    private boolean validateRequiredTextFields(String... fields) {
+<span class="nc bnc" id="L577" title="All 2 branches missed.">        for (String field : fields) {</span>
+<span class="nc bnc" id="L578" title="All 2 branches missed.">            if (field.isEmpty()) {</span>
+<span class="nc" id="L579">                JOptionPane.showMessageDialog(this,</span>
+                        &quot;Будь ласка, заповніть всі обов'язкові поля.&quot;,
+                        &quot;Помилка&quot;, JOptionPane.ERROR_MESSAGE);
+<span class="nc" id="L582">                return false;</span>
+            }
+        }
+<span class="nc" id="L585">        return true;</span>
+    }
+
+    /**
+     * Валідує позитивне числове значення.
+     */
+    private Double validatePositiveNumber(String numberText, String errorMessage) {
+        try {
+<span class="nc" id="L593">            double value = Double.parseDouble(numberText);</span>
+<span class="nc bnc" id="L594" title="All 2 branches missed.">            if (value &lt;= 0) {</span>
+<span class="nc" id="L595">                JOptionPane.showMessageDialog(this, errorMessage, &quot;Помилка&quot;, JOptionPane.ERROR_MESSAGE);</span>
+<span class="nc" id="L596">                return null;</span>
+            }
+<span class="nc" id="L598">            return value;</span>
+<span class="nc" id="L599">        } catch (NumberFormatException e) {</span>
+<span class="nc" id="L600">            JOptionPane.showMessageDialog(this,</span>
+                    &quot;Невірний формат числового поля.&quot;, &quot;Помилка&quot;, JOptionPane.ERROR_MESSAGE);
+<span class="nc" id="L602">            return null;</span>
+        }
+    }
+
+
+    /**
+     * Обробка видалення вибраного продукта.
+     * Підтверджує видалення продукта та викликає метод видалення продукта в контролері.
+     */
+    private void handleDelete() {
+<span class="nc" id="L612">        ProductGroupEntity selectedGroup = (ProductGroupEntity) deleteComboBoxGroup.getSelectedItem();</span>
+<span class="nc bnc" id="L613" title="All 2 branches missed.">        if (selectedGroup == null) {</span>
+<span class="nc" id="L614">            JOptionPane.showMessageDialog(this, &quot;Оберіть групу для видалення.&quot;, &quot;Помилка&quot;, JOptionPane.ERROR_MESSAGE);</span>
+<span class="nc" id="L615">            return;</span>
+        }
+
+        // Оновлюємо список продуктів для вибраної групи
+<span class="nc" id="L619">        updateProductComboById(selectedGroup.getId());</span>
+
+<span class="nc" id="L621">        ProductEntity selectedProduct = (ProductEntity) deleteComboBoxProduct.getSelectedItem();</span>
+<span class="nc bnc" id="L622" title="All 2 branches missed.">        if (selectedProduct == null) {</span>
+<span class="nc" id="L623">            JOptionPane.showMessageDialog(this, &quot;Оберіть продукт для видалення.&quot;, &quot;Помилка&quot;, JOptionPane.ERROR_MESSAGE);</span>
+<span class="nc" id="L624">            return;</span>
+        }
+
+<span class="nc" id="L627">        int confirm = JOptionPane.showConfirmDialog(this,</span>
+<span class="nc" id="L628">                &quot;Ви впевнені, що хочете видалити продукт &quot; + selectedProduct.getName() + &quot;?&quot;, &quot;Підтвердження&quot;,</span>
+                JOptionPane.YES_NO_OPTION);
+<span class="nc bnc" id="L630" title="All 2 branches missed.">        if (confirm == JOptionPane.YES_OPTION) {</span>
+<span class="nc" id="L631">            Result result = productController.delete(selectedProduct.getId());</span>
+<span class="nc" id="L632">            JOptionPane.showMessageDialog(this, result.getMessage());</span>
+<span class="nc" id="L633">            updateAllCombos();</span>
+        }
+<span class="nc" id="L635">    }</span>
+
+    /**
+     * Обробка перегляду інформації про вибраний продукт.
+     * Виводить деталі продукта у текстову область.
+     */
+    private void handleViewSingle() {
+<span class="nc" id="L642">        ProductEntity selectedProduct = (ProductEntity) viewComboBox.getSelectedItem();</span>
+<span class="nc bnc" id="L643" title="All 2 branches missed.">        if (selectedProduct != null) {</span>
+<span class="nc" id="L644">            viewTextArea.setText(selectedProduct.fullName() +</span>
+<span class="nc" id="L645">                    &quot;\nГрупа: &quot; + productGroupController.findById(selectedProduct.getProductGroupId()).get());</span>
+        } else {
+<span class="nc" id="L647">            viewTextArea.setText(&quot;&quot;);</span>
+        }
+<span class="nc" id="L649">    }</span>
+
+    /**
+     * Відображає відфільтровані продукти з використанням {@link ProductEntity#fullName()}.
+     */
+    private void displayFilteredProducts() {
+<span class="nc" id="L655">        String filterText = filterField.getText().trim();</span>
+<span class="nc" id="L656">        List&lt;ProductEntity&gt; products = productController.findAllByRegExp(filterText);</span>
+
+<span class="nc" id="L658">        StringBuilder sb = new StringBuilder();</span>
+
+<span class="nc bnc" id="L660" title="All 2 branches missed.">        if (products == null) {</span>
+<span class="nc" id="L661">            sb.append(&quot;Помилка: Невірний синтаксис регулярного виразу&quot;);</span>
+<span class="nc bnc" id="L662" title="All 2 branches missed.">        } else if (products.isEmpty()) {</span>
+<span class="nc" id="L663">            sb.append(&quot;Не знайдено продуктів&quot;);</span>
+<span class="nc bnc" id="L664" title="All 4 branches missed.">            if (!filterText.isEmpty() &amp;&amp; !&quot;*&quot;.equals(filterText)) {</span>
+<span class="nc" id="L665">                sb.append(&quot; за вказаним фільтром: &quot;).append(filterText);</span>
+            }
+        } else {
+<span class="nc" id="L668">            sb.append(&quot;Список продуктів&quot;);</span>
+<span class="nc bnc" id="L669" title="All 4 branches missed.">            if (!filterText.isEmpty() &amp;&amp; !&quot;*&quot;.equals(filterText)) {</span>
+<span class="nc" id="L670">                sb.append(&quot; (фільтр: &quot;).append(filterText).append(&quot;)&quot;);</span>
+            }
+<span class="nc" id="L672">            sb.append(&quot; (&quot;).append(products.size()).append(&quot;):\n\n&quot;);</span>
+
+<span class="nc" id="L674">            products.forEach(product -&gt; sb.append(String.format(</span>
+                    &quot;Назва: %s\nОпис: %s\nВиробник: %s\nКількість: %.2f\nЦіна: %.2f\nГрупа: %s\n\n&quot;,
+<span class="nc" id="L676">                    product.getName(),</span>
+<span class="nc" id="L677">                    product.getDescription(),</span>
+<span class="nc" id="L678">                    product.getManufacturer(),</span>
+<span class="nc" id="L679">                    product.getQuantityInStock(),</span>
+<span class="nc" id="L680">                    product.getPricePerUnit(),</span>
+<span class="nc" id="L681">                    productGroupController.findById(product.getProductGroupId()).get()</span>
+            )));
+        }
+
+<span class="nc" id="L685">        viewAllTextArea.setText(sb.toString());</span>
+<span class="nc" id="L686">    }</span>
+
+    /**
+     * Оновлення випадаючих списків на основі актуальних даних продуктів.
+     */
+    public void updateAllCombos() {
+<span class="nc" id="L692">        updateAllGroupCombos();</span>
+<span class="nc" id="L693">        updateAllProductCombos();</span>
+<span class="nc" id="L694">    }</span>
+
+    /**
+     * Оновлює комбобокс продуктів для перегляду, фільтруючи по ID групи.
+     */
+    private void updateViewComboByGroupId(String groupId) {
+<span class="nc" id="L700">        List&lt;ProductEntity&gt; products = productController.findAllByGroupId(groupId);</span>
+<span class="nc" id="L701">        viewComboBox.removeAllItems();</span>
+
+<span class="nc bnc" id="L703" title="All 2 branches missed.">        for (ProductEntity product : products) {</span>
+<span class="nc" id="L704">            viewComboBox.addItem(product);</span>
+<span class="nc" id="L705">        }</span>
+<span class="nc" id="L706">    }</span>
+
+    /**
+     * Оновлює комбобокс продуктів для зміни кількості, фільтруючи по ID групи.
+     */
+    private void updateChangeCountComboByGroupId(String groupId) {
+<span class="nc" id="L712">        List&lt;ProductEntity&gt; products = productController.findAllByGroupId(groupId);</span>
+<span class="nc" id="L713">        changeCountComboBox.removeAllItems();</span>
+
+<span class="nc bnc" id="L715" title="All 2 branches missed.">        for (ProductEntity product : products) {</span>
+<span class="nc" id="L716">            changeCountComboBox.addItem(product);</span>
+<span class="nc" id="L717">        }</span>
+<span class="nc" id="L718">    }</span>
+
+    /**
+     * Оновлює комбобокс продуктів для видалення, фільтруючи по ID групи.
+     *
+     * @param groupId ID групи продуктів для фільтрації
+     */
+    private void updateProductComboById(String groupId) {
+        // Зберігаємо поточний вибраний продукт
+<span class="nc" id="L727">        ProductEntity selectedProduct = (ProductEntity) deleteComboBoxProduct.getSelectedItem();</span>
+<span class="nc bnc" id="L728" title="All 2 branches missed.">        String selectedProductId = selectedProduct != null ? selectedProduct.getId() : null;</span>
+
+<span class="nc" id="L730">        List&lt;ProductEntity&gt; products = productController.findAllByGroupId(groupId);</span>
+<span class="nc" id="L731">        deleteComboBoxProduct.removeAllItems();</span>
+
+<span class="nc bnc" id="L733" title="All 2 branches missed.">        for (ProductEntity product : products) {</span>
+<span class="nc" id="L734">            deleteComboBoxProduct.addItem(product);</span>
+            // Відновлюємо вибраний продукт, якщо він існує в новому списку
+<span class="nc bnc" id="L736" title="All 4 branches missed.">            if (selectedProductId != null &amp;&amp; selectedProductId.equals(product.getId())) {</span>
+<span class="nc" id="L737">                deleteComboBoxProduct.setSelectedItem(product);</span>
+            }
+<span class="nc" id="L739">        }</span>
+
+        // Якщо не вдалося відновити вибраний продукт, вибираємо перший елемент
+<span class="nc bnc" id="L742" title="All 4 branches missed.">        if (deleteComboBoxProduct.getSelectedIndex() == -1 &amp;&amp; deleteComboBoxProduct.getItemCount() &gt; 0) {</span>
+<span class="nc" id="L743">            deleteComboBoxProduct.setSelectedIndex(0);</span>
+        }
+<span class="nc" id="L745">    }</span>
+
+    /**
+     * Оновлює всі комбобокси груп продуктів (для створення, оновлення та видалення).
+     * Завантажує актуальний список груп з контролера.
+     */
+    private void updateAllGroupCombos() {
+<span class="nc" id="L752">        List&lt;ProductGroupEntity&gt; groups = productGroupController.getAll();</span>
+<span class="nc" id="L753">        createComboBoxGroup.removeAllItems();</span>
+<span class="nc" id="L754">        updateComboBoxGroup.removeAllItems();</span>
+<span class="nc" id="L755">        deleteComboBoxGroup.removeAllItems();</span>
+<span class="nc" id="L756">        viewComboBoxGroup.removeAllItems();</span>
+<span class="nc" id="L757">        changeCountComboBoxGroup.removeAllItems();</span>
+<span class="nc" id="L758">        viewByGroupComboBox.removeAllItems();</span>
+
+<span class="nc bnc" id="L760" title="All 2 branches missed.">        for (ProductGroupEntity group : groups) {</span>
+<span class="nc" id="L761">            createComboBoxGroup.addItem(group);</span>
+<span class="nc" id="L762">            updateComboBoxGroup.addItem(group);</span>
+<span class="nc" id="L763">            deleteComboBoxGroup.addItem(group);</span>
+<span class="nc" id="L764">            viewComboBoxGroup.addItem(group);</span>
+<span class="nc" id="L765">            changeCountComboBoxGroup.addItem(group);</span>
+<span class="nc" id="L766">            viewByGroupComboBox.addItem(group);</span>
+<span class="nc" id="L767">        }</span>
+<span class="nc" id="L768">    }</span>
+
+    /**
+     * Оновлює всі комбобокси продуктів (для оновлення, перегляду та зміни кількості).
+     * Завантажує повний список продуктів з контролера.
+     */
+    private void updateAllProductCombos() {
+<span class="nc" id="L775">        List&lt;ProductEntity&gt; products = productController.getAll();</span>
+<span class="nc" id="L776">        updateComboBoxProduct.removeAllItems();</span>
+<span class="nc" id="L777">        viewComboBox.removeAllItems();</span>
+<span class="nc" id="L778">        changeCountComboBox.removeAllItems();</span>
+
+<span class="nc bnc" id="L780" title="All 2 branches missed.">        for (ProductEntity product : products) {</span>
+<span class="nc" id="L781">            updateComboBoxProduct.addItem(product);</span>
+<span class="nc" id="L782">            viewComboBox.addItem(product);</span>
+<span class="nc" id="L783">            changeCountComboBox.addItem(product);</span>
+<span class="nc" id="L784">        }</span>
+<span class="nc" id="L785">    }</span>
+
+
+    /**
+     * Очищає поля для створення нового продукту.
+     */
+    private void clearCreateFields() {
+<span class="nc" id="L792">        createNameField.setText(&quot;&quot;);</span>
+<span class="nc" id="L793">        createDescField.setText(&quot;&quot;);</span>
+<span class="nc" id="L794">        createManufacturerField.setText(&quot;&quot;);</span>
+<span class="nc" id="L795">        createQuantityInStockField.setText(&quot;&quot;);</span>
+<span class="nc" id="L796">        createPriceField.setText(&quot;&quot;);</span>
+<span class="nc" id="L797">    }</span>
+
+    /**
+     * Очищає поля для оновлення продукту.
+     */
+    private void clearUpdateFields() {
+<span class="nc" id="L803">        createNameField.setText(&quot;&quot;);</span>
+<span class="nc" id="L804">        createDescField.setText(&quot;&quot;);</span>
+<span class="nc" id="L805">        createManufacturerField.setText(&quot;&quot;);</span>
+<span class="nc" id="L806">        createQuantityInStockField.setText(&quot;&quot;);</span>
+<span class="nc" id="L807">        createPriceField.setText(&quot;&quot;);</span>
+<span class="nc" id="L808">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

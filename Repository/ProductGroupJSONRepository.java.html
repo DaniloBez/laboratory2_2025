@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductGroupJSONRepository.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Laboratory2_2025</a> &gt; <a href="index.source.html" class="el_package">Repository</a> &gt; <span class="el_source">ProductGroupJSONRepository.java</span></div><h1>ProductGroupJSONRepository.java</h1><pre class="source lang-java linenums">package Repository;
+
+import Entity.ProductGroupEntity;
+import Utils.FileHandler;
+import Utils.Result;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * Репозиторій для управляння об'єктами {@link ProductGroupEntity} у JSON файлі.
+ */
+<span class="fc" id="L16">public class ProductGroupJSONRepository implements IProductGroupRepository {</span>
+    /**
+     * Назва файлу де будуть зберігатися дані
+     */
+<span class="fc" id="L20">    private final String FILE_PATH = &quot;src/main/resources/productGroups.json&quot;;</span>
+
+    /**
+     * Об'єкт для обробки файлу
+     */
+<span class="fc" id="L25">    FileHandler file = new FileHandler(FILE_PATH);</span>
+
+    /**
+     * Список усіх груп
+     */
+    private List&lt;ProductGroupEntity&gt; productGroups;
+
+    /**
+     * Клас для серіалізації/десеріалізації об'єктів
+     */
+<span class="fc" id="L35">    ObjectMapper mapper = new ObjectMapper();</span>
+
+    /**
+     * Зчитує усі групи продуктів з json файлу, і десеріалізує їх.
+     * Заповнює productGroups, якщо може зчитати.
+     * @return Result(true, null) або Result(false, error message)
+     */
+    private Result readAllProductGroups(){
+<span class="fc" id="L43">        Result resultCreate = file.createFileIfNotExist();</span>
+
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">        if(!resultCreate.isSuccess())</span>
+<span class="nc" id="L46">            return resultCreate;</span>
+
+<span class="fc" id="L48">        Result resultRead = file.readJSONStringFromFile();</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (!resultRead.isSuccess())</span>
+<span class="fc" id="L50">            return resultRead;</span>
+
+        try {
+<span class="pc bpc" id="L53" title="2 of 4 branches missed.">            if(resultRead.getMessage() == null || resultRead.getMessage().isEmpty())</span>
+<span class="nc" id="L54">                productGroups = new ArrayList&lt;&gt;();</span>
+            else
+<span class="fc" id="L56">                productGroups = new ArrayList&lt;&gt;(List.of(mapper.readValue(resultRead.getMessage(), ProductGroupEntity[].class)));</span>
+<span class="fc" id="L57">            return resultRead;</span>
+        }
+<span class="nc" id="L59">        catch (JsonProcessingException e) {</span>
+<span class="nc" id="L60">            return new Result(false, &quot;Помилка десеріалізації: &quot;+ e.getMessage());</span>
+        }
+    }
+
+    /**
+     * Записує усі групи продуктів у json файл.
+     * @return Result(true, null) або Result(false, error message)
+     */
+    private Result writeAllProductGroups(){
+<span class="fc" id="L69">        Result resultCreate = file.createFileIfNotExist();</span>
+
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">        if(!resultCreate.isSuccess())</span>
+<span class="nc" id="L72">            return resultCreate;</span>
+
+        try {
+<span class="fc" id="L75">            String json = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(productGroups);</span>
+<span class="fc" id="L76">            return file.writeJSONStringInFile(json);</span>
+        }
+<span class="nc" id="L78">        catch (JsonProcessingException e) {</span>
+<span class="nc" id="L79">            return new Result(false, &quot;Помилка серіалізації: &quot;+ e.getMessage());</span>
+        }
+    }
+
+    /**
+     * Зберігає нову групу продуктів у файл.
+     *
+     * @param productGroup новий об'єкт {@code ProductGroupEntity} для збереження
+     * @return результат операції збереження
+     */
+    @Override
+    public Result save(ProductGroupEntity productGroup) {
+<span class="fc" id="L91">        Result result = readAllProductGroups();</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        if (!result.isSuccess())</span>
+<span class="fc" id="L93">            return result;</span>
+
+<span class="fc" id="L95">        productGroups.add(productGroup);</span>
+<span class="fc" id="L96">        return writeAllProductGroups();</span>
+    }
+
+    /**
+     * Оновлює існуючу групу продуктів за її ID.
+     *
+     * @param id           ідентифікатор групи
+     * @param productGroup нові дані для оновлення
+     * @return результат операції оновлення
+     */
+    @Override
+    public Result update(String id, ProductGroupEntity productGroup) {
+<span class="nc" id="L108">        Result result = readAllProductGroups();</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (!result.isSuccess()) return result;</span>
+
+<span class="nc" id="L111">        Optional&lt;ProductGroupEntity&gt; existingProductGroup = findById(id);</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (existingProductGroup.isEmpty())</span>
+<span class="nc" id="L113">            return new Result(false, &quot;Такої групи не існує!&quot;);</span>
+
+<span class="nc" id="L115">        existingProductGroup.get().update(productGroup);</span>
+<span class="nc" id="L116">        return writeAllProductGroups();</span>
+    }
+
+    /**
+     * Повертає групу продуктів за ID, якщо така існує.
+     *
+     * @param id ідентифікатор групи
+     * @return {@code Optional} з об'єктом {@code ProductGroupEntity}, або порожній, якщо не знайдено
+     */
+    @Override
+    public Optional&lt;ProductGroupEntity&gt; findById(String id) {
+<span class="nc" id="L127">        Result result = readAllProductGroups();</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">        if (!result.isSuccess())</span>
+<span class="nc" id="L129">            return Optional.empty();</span>
+
+<span class="nc" id="L131">        return productGroups.stream().filter(productGroup -&gt; productGroup.getId().equals(id)).findFirst();</span>
+    }
+
+    /**
+     * Повертає список усіх груп продуктів.
+     *
+     * @return список {@code List&lt;ProductGroupEntity&gt;} або {@code null}, якщо виникла помилка читання
+     */
+    @Override
+    public List&lt;ProductGroupEntity&gt; findAll() {
+<span class="nc" id="L141">        Result result = readAllProductGroups();</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">        if (!result.isSuccess())</span>
+<span class="nc" id="L143">            return null;</span>
+
+<span class="nc" id="L145">        return productGroups;</span>
+    }
+
+    /**
+     * Видаляє групу продуктів за ID.
+     *
+     * @param id ідентифікатор групи для видалення
+     * @return результат операції видалення
+     */
+    @Override
+    public Result deleteById(String id) {
+<span class="nc" id="L156">        Result result = readAllProductGroups();</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">        if (!result.isSuccess()) return result;</span>
+
+<span class="nc" id="L159">        Optional&lt;ProductGroupEntity&gt; productGroup = findById(id);</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">        if (productGroup.isEmpty())</span>
+<span class="nc" id="L161">            return new Result(false, &quot;Такої групи не існує!&quot;);</span>
+
+<span class="nc" id="L163">        productGroups.remove(productGroup.get());</span>
+<span class="nc" id="L164">        return writeAllProductGroups();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

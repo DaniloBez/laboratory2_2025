@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MainForm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Laboratory2_2025</a> &gt; <a href="index.source.html" class="el_package">View</a> &gt; <span class="el_source">MainForm.java</span></div><h1>MainForm.java</h1><pre class="source lang-java linenums">package View;
+
+import Utils.JMenuBarUtil;
+import javax.swing.*;
+import java.awt.*;
+import java.util.Objects;
+
+/**
+ * Головна форма додатку для автоматизації роботи складом.
+ * Відображає основну інформацію про програму та забезпечує навігацію до інших форм.
+ */
+public class MainForm extends JFrame {
+    private JMenuBar menuBar;
+
+    /**
+     * Конструктор головної форми.
+     * Ініціалізує форму, встановлює параметри вікна та ініціалізує компоненти.
+     */
+<span class="nc" id="L19">    public MainForm() {</span>
+<span class="nc" id="L20">        setTitle(&quot;Main&quot;);</span>
+<span class="nc" id="L21">        setSize(800, 600);</span>
+<span class="nc" id="L22">        setExtendedState(JFrame.MAXIMIZED_BOTH);</span>
+<span class="nc" id="L23">        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span>
+
+        // Встановлюємо сучасний вигляд (Nimbus)
+        try {
+<span class="nc" id="L27">            UIManager.setLookAndFeel(&quot;javax.swing.plaf.nimbus.NimbusLookAndFeel&quot;);</span>
+<span class="nc" id="L28">        } catch(Exception ex) {</span>
+<span class="nc" id="L29">            System.out.println(&quot;Nimbus L&amp;F не вдалося встановити.&quot;);</span>
+<span class="nc" id="L30">        }</span>
+
+<span class="nc" id="L32">        initComponents();</span>
+<span class="nc" id="L33">    }</span>
+
+    /**
+     * Ініціалізація компонентів форми.
+     * Створює меню, встановлює фонове зображення та додає інформаційні тексти.
+     */
+    private void initComponents() {
+<span class="nc" id="L40">        menuBar = JMenuBarUtil.getMenuBar();</span>
+<span class="nc" id="L41">        setJMenuBar(menuBar);</span>
+
+        // Завантаження зображення
+<span class="nc" id="L44">        ImageIcon backgroundIcon = new ImageIcon(Objects.requireNonNull(getClass().getResource(&quot;/background.png&quot;))); // шлях до зображення</span>
+<span class="nc" id="L45">        Image backgroundImage = backgroundIcon.getImage();</span>
+
+        // Панель з фоном
+<span class="nc" id="L48">        BackgroundPanel backgroundPanel = new BackgroundPanel(backgroundImage);</span>
+
+<span class="nc" id="L50">        JPanel createPanel = new JPanel(new GridBagLayout());</span>
+<span class="nc" id="L51">        createPanel.setOpaque(false); // робимо прозорим, щоб фон було видно</span>
+
+<span class="nc" id="L53">        GridBagConstraints gbc = new GridBagConstraints();</span>
+<span class="nc" id="L54">        gbc.insets = new Insets(8, 8, 8, 8);</span>
+<span class="nc" id="L55">        gbc.fill = GridBagConstraints.HORIZONTAL;</span>
+
+<span class="nc" id="L57">        gbc.gridx = 0;</span>
+<span class="nc" id="L58">        gbc.gridy = 0;</span>
+<span class="nc" id="L59">        String[] texts = {</span>
+                &quot;Лабораторна робота №2: Автоматизоване робоче місце&quot;,
+                &quot;Роботу виконали Безух Данило та Анкудович Григорій &quot;,
+                &quot;Необхідно автоматизувати роботу невеликого підприємства по роботі з складом.&quot;,
+                &quot;Існує декілька груп товарів (наприклад: Продовольчі, непродовольчі...).&quot;,
+                &quot;В кожній групі товарів існують конкретні товари (наприклад: борошно, гречка ...).&quot;,
+                &quot;У кожного товару є наступні властивості -&quot;,
+                &quot;назва, опис, виробник, кількість на складі, ціна за одиницю.&quot;,
+                &quot;Група товарів містить наступні властивості - назва, опис.&quot;
+        };
+
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        for (String text : texts) {</span>
+<span class="nc" id="L71">            JLabel label = new JLabel(text);</span>
+<span class="nc" id="L72">            label.setForeground(Color.WHITE);</span>
+<span class="nc" id="L73">            createPanel.add(label, gbc);</span>
+<span class="nc" id="L74">            gbc.gridy++;</span>
+        }
+
+<span class="nc" id="L77">        backgroundPanel.add(createPanel, BorderLayout.CENTER);</span>
+<span class="nc" id="L78">        setContentPane(backgroundPanel);</span>
+<span class="nc" id="L79">    }</span>
+}
+
+/**
+ * Кастомна JPanel з можливістю відображення фонового зображення.
+ */
+class BackgroundPanel extends JPanel {
+    private Image backgroundImage;
+
+    /**
+     * Конструктор панелі з фоном.
+     * @param backgroundImage зображення для фону
+     */
+<span class="nc" id="L92">    public BackgroundPanel(Image backgroundImage) {</span>
+<span class="nc" id="L93">        this.backgroundImage = backgroundImage;</span>
+<span class="nc" id="L94">        setLayout(new BorderLayout());</span>
+<span class="nc" id="L95">    }</span>
+
+    /**
+     * Відображення фонового зображення.
+     * @param g об'єкт Graphics для малювання
+     */
+    @Override
+    protected void paintComponent(Graphics g) {
+<span class="nc" id="L103">        super.paintComponent(g);</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        if (backgroundImage != null) {</span>
+<span class="nc" id="L105">            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);</span>
+        }
+<span class="nc" id="L107">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

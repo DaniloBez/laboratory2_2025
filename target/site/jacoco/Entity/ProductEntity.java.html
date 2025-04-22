@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductEntity.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Laboratory2_2025</a> &gt; <a href="index.source.html" class="el_package">Entity</a> &gt; <span class="el_source">ProductEntity.java</span></div><h1>ProductEntity.java</h1><pre class="source lang-java linenums">package Entity;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.UUID;
+
+/**
+ * Представляє продукт, ідентифікований унікальним ID.
+ */
+@Getter
+@NoArgsConstructor
+public class ProductEntity {
+
+    /**
+     * Унікальний ідентифікатор продукту.
+     */
+<span class="nc" id="L19">    private String id = UUID.randomUUID().toString();</span>
+
+    /**
+     * Назва продукту.
+     */
+    @Setter
+    private String name;
+
+    /**
+     * Опис продукту.
+     */
+    @Setter
+    private String description;
+
+    /**
+     * Виробник продукту.
+     */
+    @Setter
+    private String manufacturer;
+
+    /**
+     * Кількість продукту на складі.
+     */
+    @Setter
+    private double quantityInStock;
+
+    /**
+     * Ціна за одиницю продукту.
+     */
+    @Setter
+    private double pricePerUnit;
+
+    /**
+     * Унікальний ідентифікатор групи продуктів, до якої належить продукт.
+     */
+    @Setter
+    private String ProductGroupId;
+
+    /**
+     * Конструктор, що створює новий продукт з вказаними параметрами.
+     *
+     * @param name            назва продукту
+     * @param description     опис продукту
+     * @param manufacturer    виробник продукту
+     * @param quantityInStock кількість на складі
+     * @param pricePerUnit    ціна за одиницю
+     */
+<span class="nc" id="L66">    public ProductEntity(String name, String description, String manufacturer, double quantityInStock, double pricePerUnit, String ProductGroupId) {</span>
+<span class="nc" id="L67">        this.name = name;</span>
+<span class="nc" id="L68">        this.description = description;</span>
+<span class="nc" id="L69">        this.manufacturer = manufacturer;</span>
+<span class="nc" id="L70">        this.quantityInStock = quantityInStock;</span>
+<span class="nc" id="L71">        this.pricePerUnit = pricePerUnit;</span>
+<span class="nc" id="L72">        this.ProductGroupId = ProductGroupId;</span>
+<span class="nc" id="L73">    }</span>
+
+    /**
+     * Оновлює поля відповідно до нових даних
+     * @param productEntity нові дані
+     */
+    public void update(ProductEntity productEntity) {
+<span class="nc" id="L80">        this.name = productEntity.name;</span>
+<span class="nc" id="L81">        this.description = productEntity.description;</span>
+<span class="nc" id="L82">        this.manufacturer = productEntity.manufacturer;</span>
+<span class="nc" id="L83">        this.quantityInStock = productEntity.quantityInStock;</span>
+<span class="nc" id="L84">        this.pricePerUnit = productEntity.pricePerUnit;</span>
+<span class="nc" id="L85">        this.ProductGroupId = productEntity.ProductGroupId;</span>
+<span class="nc" id="L86">    }</span>
+
+    /**
+     * Повертає повну назву товару без id.
+     * @return повна назва
+     */
+    public String fullName() {
+<span class="nc" id="L93">        return &quot;Назва: &quot; + name + &quot;\n&quot; +</span>
+                &quot;Опис: &quot; + description + &quot;\n&quot; +
+                &quot;Виробник: &quot; + manufacturer + &quot;\n&quot; +
+                &quot;Кількість на складі: &quot; + quantityInStock + &quot;\n&quot; +
+                &quot;Ціна за одиницю: &quot; + pricePerUnit + &quot;\n&quot; +
+                &quot;Загальна вартість товару на складі: &quot; + quantityInStock * pricePerUnit;
+    }
+
+    /**
+     * Повертає рядкове представлення продукту.
+     *
+     * @return рядок, що містить інформацію про продукт
+     */
+    @Override
+    public String toString() {
+<span class="nc" id="L108">        return name;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

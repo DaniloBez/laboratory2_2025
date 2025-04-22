@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ProductService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Laboratory2_2025</a> &gt; <a href="index.source.html" class="el_package">Service</a> &gt; <span class="el_source">ProductService.java</span></div><h1>ProductService.java</h1><pre class="source lang-java linenums">package Service;
+
+import Entity.ProductEntity;
+import Repository.ProductJSONRepository;
+import Utils.Result;
+import Utils.UniqueNames;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
+
+/**
+ * Сервіс для роботи з продуктами.
+ * Використовує репозиторій {@link ProductJSONRepository} для зберігання даних
+ * та клас {@link UniqueNames} для забезпечення унікальності назв продуктів.
+ */
+public class ProductService {
+<span class="nc" id="L21">    private final ProductJSONRepository repository = new ProductJSONRepository();</span>
+
+    /**
+     * Ініціалізує сервіс, додаючи всі наявні назви продуктів до реєстру унікальних назв.
+     */
+<span class="nc" id="L26">    public ProductService() {</span>
+<span class="nc bnc" id="L27" title="All 2 branches missed.">        for (ProductEntity productEntity : repository.findAll()) {</span>
+<span class="nc" id="L28">            UniqueNames.add(productEntity.getName());</span>
+<span class="nc" id="L29">        }</span>
+<span class="nc" id="L30">    }</span>
+
+    /**
+     * Створює новий продукт, якщо його назва унікальна.
+     *
+     * @param productService Продукт, який потрібно створити.
+     * @return Результат створення: успішно/неуспішно та повідомлення.
+     */
+    public Result create(ProductEntity productService) {
+<span class="nc" id="L39">        Result checkUnique = UniqueNames.add(productService.getName());</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        if (checkUnique.isSuccess())</span>
+<span class="nc" id="L41">            return repository.save(productService);</span>
+        else
+<span class="nc" id="L43">            return checkUnique;</span>
+    }
+
+    /**
+     * Оновлює продукт за вказаним ідентифікатором.
+     *
+     * @param id Ідентифікатор продукту, який потрібно оновити.
+     * @param productEntity Нові дані продукту.
+     * @return Результат оновлення: успішно/неуспішно та повідомлення.
+     */
+    public Result update(String id, ProductEntity productEntity){
+<span class="nc" id="L54">        Optional&lt;ProductEntity&gt; oldProduct = repository.findById(id);</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        if(oldProduct.isEmpty())</span>
+<span class="nc" id="L56">            return new Result(false, &quot;Продукт не знайдено!&quot;);</span>
+
+<span class="nc" id="L58">        UniqueNames.remove(oldProduct.get().getName());</span>
+<span class="nc" id="L59">        Result checkUnique = UniqueNames.add(productEntity.getName());</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        if(checkUnique.isSuccess())</span>
+<span class="nc" id="L61">            return repository.update(id, productEntity);</span>
+
+<span class="nc" id="L63">        return checkUnique;</span>
+    }
+
+    /**
+     * Повертає продукт за ідентифікатором.
+     *
+     * @param id Ідентифікатор продукту.
+     * @return {@link Optional} з продуктом або порожній, якщо продукт не знайдено.
+     */
+    public Optional&lt;ProductEntity&gt; getById(String id){
+<span class="nc" id="L73">        return repository.findById(id);</span>
+    }
+
+    /**
+     * Повертає список усіх продуктів.
+     *
+     * @return Список усіх продуктів.
+     */
+    public List&lt;ProductEntity&gt; getAll(){
+<span class="nc" id="L82">        return repository.findAll();</span>
+    }
+
+    /**
+     * Видаляє продукт за ідентифікатором та очищує його назву з реєстру унікальних назв.
+     *
+     * @param id Ідентифікатор продукту, який потрібно видалити.
+     * @return Результат видалення: успішно/неуспішно та повідомлення.
+     */
+    public Result delete(String id){
+<span class="nc" id="L92">        Optional&lt;ProductEntity&gt; oldProduct = repository.findById(id);</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">        if(oldProduct.isEmpty())</span>
+<span class="nc" id="L94">            return new Result(false, &quot;Продукт не знайдено!&quot;);</span>
+
+<span class="nc" id="L96">        Result result = repository.deleteById(id);</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">        if (result.isSuccess())</span>
+<span class="nc" id="L98">            UniqueNames.remove(oldProduct.get().getName());</span>
+
+<span class="nc" id="L100">        return result;</span>
+    }
+
+    /**
+     * Повертає список продуктів, назви яких відповідають регулярному виразу.
+     *
+     * @param regExp Регулярний вираз для пошуку по назвах продуктів.
+     * @return Список знайдених продуктів.
+     */
+    public List&lt;ProductEntity&gt; findAllByRegExp(String regExp){
+        try{
+<span class="nc" id="L111">            List&lt;ProductEntity&gt; productEntities = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L113" title="All 2 branches missed.">            if (&quot;*&quot;.equals(regExp)) {</span>
+<span class="nc" id="L114">                return new ArrayList&lt;&gt;(getAll());</span>
+            }
+
+<span class="nc bnc" id="L117" title="All 2 branches missed.">            for(ProductEntity productEntity : getAll()){</span>
+<span class="nc" id="L118">                Matcher matcher = Pattern.compile(regExp).matcher(productEntity.getName());</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">                if(matcher.find())</span>
+<span class="nc" id="L120">                    productEntities.add(productEntity);</span>
+<span class="nc" id="L121">            }</span>
+<span class="nc" id="L122">            return productEntities;</span>
+        }
+<span class="nc" id="L124">        catch(PatternSyntaxException e){</span>
+<span class="nc" id="L125">            return null; //TODO Потрібно додати обробку цього винятку у productForm</span>
+        }
+    }
+    /**
+     * Змінює кількість товару на складі.
+     *
+     * @param id Ідентифікатор продукту.
+     * @param count Кількість, на яку потрібно змінити залишок (може бути від’ємною).
+     * @return Результат зміни кількості: успішно/неуспішно та повідомлення.
+     */
+    public Result changeCountOfProduct(String id, double count){
+<span class="nc" id="L136">        Optional&lt;ProductEntity&gt; oldProduct = repository.findById(id);</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        if(oldProduct.isEmpty())</span>
+<span class="nc" id="L138">            return new Result(false, &quot;Продукт не знайдено!&quot;);</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">        if(oldProduct.get().getQuantityInStock() + count &lt; 0)</span>
+<span class="nc" id="L140">            return new Result(false, &quot;Стільки продуктів немає на складі!&quot;);</span>
+
+<span class="nc" id="L142">        oldProduct.get().setQuantityInStock(oldProduct.get().getQuantityInStock() + count);</span>
+<span class="nc" id="L143">        return repository.update(id, oldProduct.get());</span>
+    }
+    /**
+     * Повертає список усіх продуктів, що належать до певної групи.
+     *
+     * @param groupId Ідентифікатор групи продуктів.
+     * @return Список продуктів цієї групи.
+     */
+    public List&lt;ProductEntity&gt; findAllByGroupId(String groupId){
+<span class="nc" id="L152">        List&lt;ProductEntity&gt; productEntities = getAll();</span>
+<span class="nc" id="L153">        return productEntities.stream().filter(product -&gt; product.getProductGroupId().equals(groupId)).toList();</span>
+    }
+    /**
+     * Видаляє всі продукти, що належать до певної групи.
+     *
+     * @param groupId Ідентифікатор групи продуктів.
+     * @return Результат видалення: успішно/неуспішно та повідомлення.
+     */
+    public Result deleteAllProdutsByGroupId(String groupId){
+<span class="nc" id="L162">        List&lt;ProductEntity&gt; productEntities = findAllByGroupId(groupId);</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">        for(ProductEntity productEntity : productEntities){</span>
+<span class="nc" id="L164">            Result result = repository.deleteById(productEntity.getId());</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">            if (!result.isSuccess())</span>
+<span class="nc" id="L166">                return result;</span>
+<span class="nc" id="L167">        }</span>
+<span class="nc" id="L168">        return new Result(true, null);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

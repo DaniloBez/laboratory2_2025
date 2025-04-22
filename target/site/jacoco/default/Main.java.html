@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Main.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Laboratory2_2025</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Main.java</span></div><h1>Main.java</h1><pre class="source lang-java linenums">import Controller.ProductController;
+import Controller.ProductGroupController;
+import Entity.ProductEntity;
+import Entity.ProductGroupEntity;
+import Utils.JMenuBarUtil;
+import View.MainForm;
+import View.ProductForm;
+import View.ProductGroupForm;
+
+<span class="nc" id="L10">public class Main {</span>
+    public static void main(String[] args) {
+//        ProductController controller = ProductController.getInstance();
+//        ProductGroupController groupController = ProductGroupController.getInstance();
+//
+//        // Створення груп товарів
+//        ProductGroupEntity foodGroup = new ProductGroupEntity(&quot;Продовольчі товари&quot;, &quot;Продукти харчування&quot;);
+//        ProductGroupEntity nonFoodGroup = new ProductGroupEntity(&quot;Непродовольчі товари&quot;, &quot;Товари широкого вжитку&quot;);
+//        ProductGroupEntity electronicsGroup = new ProductGroupEntity(&quot;Електроніка&quot;, &quot;Побутова техніка та електроніка&quot;);
+//        ProductGroupEntity householdGroup = new ProductGroupEntity(&quot;Господарські товари&quot;, &quot;Товари для дому&quot;);
+//
+//        groupController.create(foodGroup);
+//        groupController.create(nonFoodGroup);
+//        groupController.create(electronicsGroup);
+//        groupController.create(householdGroup);
+//
+//        // Додавання товарів до кожної групи
+//
+//        // Продовольчі товари
+//        controller.create(new ProductEntity(&quot;Борошно&quot;, &quot;Пшеничне борошно вищого ґатунку&quot;, &quot;Київхліб&quot;, 50, 25.50, foodGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Гречка&quot;, &quot;Гречана крупа&quot;, &quot;Агротіка&quot;, 30, 45.75, foodGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Цукор&quot;, &quot;Цукор-пісок&quot;, &quot;Цукротрест&quot;, 40, 32.20, foodGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Олія&quot;, &quot;Соняшникова олія&quot;, &quot;Олійник&quot;, 25, 65.00, foodGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Молоко&quot;, &quot;Пастеризоване молоко 2,5%&quot;, &quot;Галичина&quot;, 60, 28.90, foodGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Яйця&quot;, &quot;Яйця курячі С0&quot;, &quot;Ясенсвіт&quot;, 100, 3.50, foodGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Хліб&quot;, &quot;Хліб білий нарезний&quot;, &quot;Хлібодар&quot;, 40, 18.75, foodGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Сіль&quot;, &quot;Сіль кухонна&quot;, &quot;Артемсіль&quot;, 80, 8.50, foodGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Чай&quot;, &quot;Чай чорний&quot;, &quot;Ліптон&quot;, 35, 75.30, foodGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Кава&quot;, &quot;Кава мелена&quot;, &quot;Jacobs&quot;, 20, 120.00, foodGroup.getId()));
+//
+//        // Непродовольчі товари
+//        controller.create(new ProductEntity(&quot;Мило&quot;, &quot;Туалетне мило&quot;, &quot;Duru&quot;, 45, 15.80, nonFoodGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Шампунь&quot;, &quot;Шампунь для волосся&quot;, &quot;Head &amp; Shoulders&quot;, 30, 85.50, nonFoodGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Зубна паста&quot;, &quot;Паста для зубів&quot;, &quot;Colgate&quot;, 50, 42.30, nonFoodGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Гель для душу&quot;, &quot;Освіжаючий гель&quot;, &quot;Fa&quot;, 40, 65.20, nonFoodGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Рушник&quot;, &quot;Банний рушник&quot;, &quot;Текстиль&quot;, 25, 120.00, nonFoodGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Постільна білизна&quot;, &quot;Комплект постільної білизни&quot;, &quot;Cotton Life&quot;, 15, 350.00, nonFoodGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Ганчірка&quot;, &quot;Мікрофіброва ганчірка&quot;, &quot;Clean&quot;, 60, 25.50, nonFoodGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Віник&quot;, &quot;Віник для підлоги&quot;, &quot;Domax&quot;, 20, 75.00, nonFoodGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Відбілювач&quot;, &quot;Відбілювач для білизни&quot;, &quot;Ace&quot;, 35, 45.80, nonFoodGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Порошок&quot;, &quot;Пральний порошок&quot;, &quot;Tide&quot;, 30, 95.00, nonFoodGroup.getId()));
+//
+//        // Електроніка
+//        controller.create(new ProductEntity(&quot;Телевізор&quot;, &quot;Smart TV 4K&quot;, &quot;Samsung&quot;, 10, 15000.00, electronicsGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Смартфон&quot;, &quot;Флагманський смартфон&quot;, &quot;Apple&quot;, 15, 35000.00, electronicsGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Ноутбук&quot;, &quot;Ігровий ноутбук&quot;, &quot;Asus&quot;, 8, 28000.00, electronicsGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Навушники&quot;, &quot;Бездротові навушники&quot;, &quot;Sony&quot;, 20, 2500.00, electronicsGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Пральна машина&quot;, &quot;Автоматична пральна машина&quot;, &quot;LG&quot;, 5, 12000.00, electronicsGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Холодильник&quot;, &quot;Двокамерний холодильник&quot;, &quot;Bosch&quot;, 7, 18000.00, electronicsGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Пилосос&quot;, &quot;Робот-пилосос&quot;, &quot;Xiaomi&quot;, 12, 8000.00, electronicsGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Мікрохвильовка&quot;, &quot;Мікрохвильова піч&quot;, &quot;Panasonic&quot;, 15, 3500.00, electronicsGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Фен&quot;, &quot;Професійний фен&quot;, &quot;Philips&quot;, 25, 1200.00, electronicsGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Електрочайник&quot;, &quot;Швидкозаварювач&quot;, &quot;Tefal&quot;, 30, 900.00, electronicsGroup.getId()));
+//
+//        // Господарські товари
+//        controller.create(new ProductEntity(&quot;Каструля&quot;, &quot;Каструля нержавіюча&quot;, &quot;Tefal&quot;, 15, 850.00, householdGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Сковорода&quot;, &quot;Антипригарна сковорода&quot;, &quot;Fissler&quot;, 20, 650.00, householdGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Набір ножів&quot;, &quot;6 предметів&quot;, &quot;Zepter&quot;, 10, 1200.00, householdGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Термос&quot;, &quot;Термос 1л&quot;, &quot;Thermos&quot;, 25, 450.00, householdGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Блендер&quot;, &quot;Погружний блендер&quot;, &quot;Braun&quot;, 12, 1500.00, householdGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Дощовик&quot;, &quot;Чоловічий дощовик&quot;, &quot;Tucano&quot;, 30, 750.00, householdGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Парасолька&quot;, &quot;Автоматична парасолька&quot;, &quot;Fulton&quot;, 40, 350.00, householdGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Сумка&quot;, &quot;Дамська сумка&quot;, &quot;Guess&quot;, 18, 1200.00, householdGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Гаманець&quot;, &quot;Чоловічий гаманець&quot;, &quot;Piquadro&quot;, 22, 850.00, householdGroup.getId()));
+//        controller.create(new ProductEntity(&quot;Рюкзак&quot;, &quot;Туристичний рюкзак&quot;, &quot;Deuter&quot;, 15, 1500.00, householdGroup.getId()));
+
+        // Ініціалізація форм
+<span class="nc" id="L77">        MainForm mainForm = new MainForm();</span>
+<span class="nc" id="L78">        JMenuBarUtil.mainForm = mainForm;</span>
+<span class="nc" id="L79">        mainForm.setVisible(true);</span>
+
+<span class="nc" id="L81">        ProductForm productForm = new ProductForm();</span>
+<span class="nc" id="L82">        JMenuBarUtil.productForm = productForm;</span>
+<span class="nc" id="L83">        productForm.setVisible(false);</span>
+
+<span class="nc" id="L85">        ProductGroupForm productGroupForm = new ProductGroupForm();</span>
+<span class="nc" id="L86">        JMenuBarUtil.productGroupForm = productGroupForm;</span>
+<span class="nc" id="L87">        productGroupForm.setVisible(false);</span>
+<span class="nc" id="L88">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

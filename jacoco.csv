@@ -1,0 +1,17 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Laboratory2_2025,default,Main,31,0,0,0,11,0,2,0,2,0
+Laboratory2_2025,Entity,ProductGroupEntity,18,13,0,0,5,5,3,1,3,1
+Laboratory2_2025,Entity,ProductEntity,70,0,0,0,18,0,4,0,4,0
+Laboratory2_2025,Repository,ProductJSONRepository,209,0,24,0,50,0,21,0,9,0
+Laboratory2_2025,Repository,ProductGroupJSONRepository,119,90,16,8,29,21,15,6,5,4
+Laboratory2_2025,Utils,JMenuBarUtil,89,0,0,0,30,0,9,0,9,0
+Laboratory2_2025,Utils,FileHandler,119,6,8,0,27,3,7,1,3,1
+Laboratory2_2025,Utils,UniqueNames,33,0,2,0,8,0,5,0,4,0
+Laboratory2_2025,Service,ProductGroupService,111,0,12,0,27,0,12,0,6,0
+Laboratory2_2025,Service,ProductService,249,0,26,0,54,0,24,0,11,0
+Laboratory2_2025,Controller,ProductController,62,0,2,0,14,0,12,0,11,0
+Laboratory2_2025,Controller,ProductGroupController,41,0,2,0,10,0,8,0,7,0
+Laboratory2_2025,View,MainForm,159,0,2,0,32,0,3,0,2,0
+Laboratory2_2025,View,BackgroundPanel,30,0,2,0,8,0,3,0,2,0
+Laboratory2_2025,View,ProductGroupForm,818,0,24,0,190,0,27,0,15,0
+Laboratory2_2025,View,ProductForm,2066,0,106,0,464,0,87,0,34,0
