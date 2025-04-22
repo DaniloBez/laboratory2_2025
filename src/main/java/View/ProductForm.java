@@ -45,6 +45,12 @@ public class ProductForm extends JFrame {
     private JButton refreshButton;
     private JTextField filterField;
 
+    // Компоненти для вкладки "Додавання/списання товару"
+    private JComboBox<ProductEntity> changeCountComboBox;
+    private JTextField changeCountField, currentCountField;
+    private JButton changeCountButton;
+
+
     /**
      * Конструктор, що ініціалізує форму, встановлює вигляд та компоненти.
      */
@@ -283,14 +289,92 @@ public class ProductForm extends JFrame {
         viewAllPanel.add(scrollAll, BorderLayout.CENTER);
         viewAllPanel.add(refreshButton, BorderLayout.SOUTH);
 
+        // --------------------- Вкладка "Додавання/списання товару" ---------------------
+        JPanel changeCountPanel = new JPanel(new GridBagLayout());
+        gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        changeCountPanel.add(new JLabel("Оберіть продукт:"), gbc);
+        gbc.gridx = 1;
+        changeCountComboBox = new JComboBox<>();
+        changeCountPanel.add(changeCountComboBox, gbc);
+
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        changeCountPanel.add(new JLabel("Поточна кількість товару:"), gbc);
+        gbc.gridx = 1;
+        currentCountField = new JTextField(20);
+        currentCountField.setEditable(false);
+        changeCountPanel.add(currentCountField, gbc);  // Виправлено тут
+
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        changeCountPanel.add(new JLabel("Зміна кількості (введіть +або- число):"), gbc);
+        gbc.gridx = 1;
+        changeCountField = new JTextField(20);
+        changeCountPanel.add(changeCountField, gbc);
+
+        gbc.gridx = 1;
+        gbc.gridy = 3;
+        changeCountButton = new JButton("Змінити кількість");
+        changeCountPanel.add(changeCountButton, gbc);
+
+        // Додаємо слухач подій
+        changeCountComboBox.addActionListener(e -> {
+            ProductEntity selectedProduct = (ProductEntity) changeCountComboBox.getSelectedItem();
+            if (selectedProduct != null) {
+                currentCountField.setText(String.valueOf(selectedProduct.getQuantityInStock()));
+            } else {
+                currentCountField.setText("");
+            }
+        });
+
+        changeCountButton.addActionListener(e -> handleChangeCount());
+
         // --------------------- Додаємо всі вкладки до таб-панелі ---------------------
         tabbedPane.addTab("Створити", createPanel);
         tabbedPane.addTab("Оновити", updatePanel);
         tabbedPane.addTab("Видалити", deletePanel);
         tabbedPane.addTab("Перегляд", viewPanel);
         tabbedPane.addTab("Пошук товарів", viewAllPanel);
+        tabbedPane.addTab("Додавання/списання товару", changeCountPanel);
 
         getContentPane().add(tabbedPane, BorderLayout.CENTER);
+    }
+
+    /** Обробник зміни кількості товару */
+    private void handleChangeCount() {
+        ProductEntity selectedProduct = (ProductEntity) changeCountComboBox.getSelectedItem();
+        if (selectedProduct == null) {
+            JOptionPane.showMessageDialog(this, "Будь ласка, оберіть продукт");
+            return;
+        }
+
+        try {
+            double quantityChange = Double.parseDouble(changeCountField.getText());
+            Result result = productController.changeCountOfProduct(
+                    selectedProduct.getId(),
+                    quantityChange
+            );
+
+            if (result.isSuccess()) {
+                JOptionPane.showMessageDialog(this, "Кількість товару успішно змінена");
+                // Оновлюємо поточне значення
+                currentCountField.setText(String.valueOf(
+                        selectedProduct.getQuantityInStock() + quantityChange
+                ));
+                // Оновлюємо всі комбобокси
+                updateAllCombos();
+                changeCountField.setText("");
+            } else {
+                JOptionPane.showMessageDialog(this, "Помилка: " + result.getMessage());
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Будь ласка, введіть коректне число");
+        }
     }
 
     /**
@@ -544,10 +628,12 @@ public class ProductForm extends JFrame {
         List<ProductEntity> products = productController.getAll();
         updateComboBoxProduct.removeAllItems();
         viewComboBox.removeAllItems();
+        changeCountComboBox.removeAllItems();
 
         for (ProductEntity product : products) {
             updateComboBoxProduct.addItem(product);
             viewComboBox.addItem(product);
+            changeCountComboBox.addItem(product);
         }
     }
 
