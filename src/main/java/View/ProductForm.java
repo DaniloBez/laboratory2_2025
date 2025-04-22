@@ -461,11 +461,8 @@ public class ProductForm extends JFrame {
     private void handleViewSingle() {
         ProductEntity selectedProduct = (ProductEntity) viewComboBox.getSelectedItem();
         if (selectedProduct != null) {
-            viewTextArea.setText("Назва: " + selectedProduct.getName() +
-                    "\nОпис: " + selectedProduct.getDescription() +
-                    "\nМануфактура: " + selectedProduct.getManufacturer() +
-                    "\nКількість на складі: " + selectedProduct.getQuantityInStock() +
-                    "\nЦіна за одиницю: " + selectedProduct.getPricePerUnit());
+            viewTextArea.setText(selectedProduct.fullName() +
+                    "\nГрупа: " + productGroupController.findById(selectedProduct.getProductGroupId()).get());
         } else {
             viewTextArea.setText("");
         }
@@ -505,7 +502,7 @@ public class ProductForm extends JFrame {
                     product.getManufacturer(),
                     product.getQuantityInStock(),
                     product.getPricePerUnit(),
-                    productGroupController.findById(product.getProductGroupId())
+                    productGroupController.findById(product.getProductGroupId()).get()
             )));
         }
 
@@ -515,7 +512,7 @@ public class ProductForm extends JFrame {
     /**
      * Оновлення випадаючих списків на основі актуальних даних продуктів.
      */
-    private void updateAllCombos() {
+    public void updateAllCombos() {
         updateAllGroupCombos();
         updateAllProductCombos();
     }
